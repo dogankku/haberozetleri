@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HaberAkışı – Anlık Haber Takibi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{
+  --bg:#f7f6f2;--surface:#f9f8f5;--surface2:#fbfbf9;--offset:#f0ede8;--offset2:#e8e5e0;
+  --dynamic:#dedad4;--divider:#d4d1ca;--border:#ccc9c1;--text:#28251d;--muted:#7a7974;
+  --faint:#bab9b4;--inv:#f9f8f4;--primary:#01696f;--primaryh:#0c4e54;--phigh:#cedcd8;
+  --orange:#da7101;--gold:#d19900;--green:#437a22;--blue:#006494;--red:#a13544;
+  --purple:#7a39bb;--pink:#a12c7b;
+  --sh-sm:0 1px 3px rgba(0,0,0,.07);--sh-md:0 4px 16px rgba(0,0,0,.09);--sh-lg:0 12px 40px rgba(0,0,0,.13);
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-full:9999px;
+  --ease:180ms cubic-bezier(.16,1,.3,1);
+}
+[data-theme="dark"]{
+  --bg:#131210;--surface:#1a1917;--surface2:#1e1d1b;--offset:#201f1d;--offset2:#242321;
+  --dynamic:#2c2b28;--divider:#2a2927;--border:#383734;--text:#d0ceca;--muted:#787674;
+  --faint:#525150;--inv:#2a2926;--primary:#4f98a3;--primaryh:#227f8b;--phigh:#2a3838;
+  --orange:#fdab43;--gold:#e8b034;--green:#6daa45;--blue:#5591c7;--red:#dd6974;
+  --purple:#a86fdf;--pink:#d163a7;
+  --sh-sm:0 1px 3px rgba(0,0,0,.3);--sh-md:0 4px 16px rgba(0,0,0,.4);--sh-lg:0 12px 40px rgba(0,0,0,.5);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{min-height:100dvh;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);background:var(--bg);display:flex;flex-direction:column}
+img{display:block;max-width:100%;object-fit:cover}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+a,button{transition:color var(--ease),background var(--ease),border-color var(--ease),opacity var(--ease)}
+:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:var(--r-sm)}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--sh-sm)}
+.header-inner{max-width:1400px;margin-inline:auto;padding:10px 24px;display:flex;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:8px;font-family:'Instrument Serif',serif;font-size:20px;white-space:nowrap;color:var(--text)}
+.logo-icon{color:var(--primary)}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);padding:3px 10px;background:var(--offset);border-radius:var(--r-full);border:1px solid var(--border)}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);color:var(--muted)}
+.icon-btn:hover{background:var(--offset);color:var(--text)}
+.refresh-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--primary);color:var(--inv);border-radius:var(--r-md);font-size:12px;font-weight:600;letter-spacing:.01em}
+.refresh-btn:hover{background:var(--primaryh)}
+.refresh-btn.spin svg{animation:rotate .8s linear infinite}
+@keyframes rotate{to{transform:rotate(360deg)}}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;max-width:1400px;margin-inline:auto;width:100%;padding:20px 24px;gap:20px}
+
+/* SIDEBAR */
+.sidebar{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:20px}
+.sidebar-label{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;padding:0 8px}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-md);font-size:13px;color:var(--muted);width:100%;text-align:left;transition:all var(--ease)}
+.nav-btn:hover{background:var(--offset);color:var(--text)}
+.nav-btn.active{background:var(--phigh);color:var(--primary);font-weight:600}
+.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nav-count{margin-left:auto;font-size:10px;background:var(--offset2);color:var(--muted);padding:1px 7px;border-radius:var(--r-full);min-width:18px;text-align:center;font-variant-numeric:tabular-nums}
+.nav-btn.active .nav-count{background:var(--primary);color:white}
+.src-row{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:var(--r-md);font-size:12px;color:var(--muted);cursor:pointer;transition:all var(--ease)}
+.src-row:hover{background:var(--offset);color:var(--text)}
+.src-row label{display:flex;align-items:center;gap:7px;cursor:pointer;width:100%}
+.src-row input[type=checkbox]{accent-color:var(--primary);cursor:pointer}
+.add-rss-btn{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:var(--r-md);font-size:12px;color:var(--primary);border:1px dashed var(--primary);width:100%;justify-content:center;margin-top:4px;opacity:.7}
+.add-rss-btn:hover{opacity:1;background:var(--phigh)}
+.auto-row{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:var(--r-md);font-size:12px;color:var(--muted)}
+.toggle-switch{position:relative;width:32px;height:18px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--offset2);border-radius:var(--r-full);cursor:pointer;transition:background var(--ease)}
+.toggle-switch input:checked+.toggle-track{background:var(--primary)}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;background:white;border-radius:50%;transition:transform var(--ease)}
+.toggle-switch input:checked~.toggle-thumb{transform:translateX(14px)}
+.countdown{font-size:10px;color:var(--faint);padding:2px 8px}
+
+/* MAIN */
+.main{flex:1;min-width:0}
+.main-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.page-title{font-size:18px;font-weight:700;color:var(--text)}
+.page-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.view-toggle{display:flex;background:var(--offset);border-radius:var(--r-md);padding:3px;gap:2px}
+.view-btn{width:30px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:var(--muted);transition:all var(--ease)}
+.view-btn.active{background:var(--surface);color:var(--text);box-shadow:var(--sh-sm)}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none}
+.search-input{width:100%;padding:8px 12px 8px 34px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);font-size:13px;color:var(--text);transition:border-color var(--ease),box-shadow var(--ease)}
+.search-input::placeholder{color:var(--faint)}
+.search-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 18%,transparent)}
+.sort-pills{display:flex;gap:6px}
+.pill{padding:5px 12px;font-size:11px;border:1px solid var(--border);border-radius:var(--r-full);color:var(--muted);background:var(--surface);transition:all var(--ease);cursor:pointer}
+.pill:hover{border-color:var(--primary);color:var(--primary)}
+.pill.active{background:var(--primary);border-color:var(--primary);color:white}
+
+/* TRENDING BAR */
+.trending-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;overflow:hidden}
+.trending-label{font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.trending-items{display:flex;gap:6px;overflow:hidden;flex-wrap:nowrap}
+.trend-chip{font-size:11px;padding:3px 10px;border-radius:var(--r-full);background:var(--offset);color:var(--muted);white-space:nowrap;cursor:pointer;border:1px solid var(--border);transition:all var(--ease);flex-shrink:0}
+.trend-chip:hover{background:var(--phigh);color:var(--primary);border-color:var(--primary)}
+
+/* FEED LIST */
+.feed{display:flex;flex-direction:column;gap:10px}
+
+/* FEED GRID */
+.feed.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;align-items:start}
+
+/* CARD LIST */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:box-shadow var(--ease),border-color var(--ease),transform var(--ease);animation:fadeUp .25s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{box-shadow:var(--sh-md);border-color:color-mix(in srgb,var(--primary) 45%,var(--border))}
+.card.read .card-title{opacity:.5}
+.card.read .card-img{opacity:.6}
+
+/* card in list mode */
+.feed:not(.grid) .card{display:grid;grid-template-columns:1fr auto;gap:12px}
+.feed:not(.grid) .card-img-wrap{grid-row:1/3;grid-column:2;width:100px;height:72px;flex-shrink:0;border-radius:var(--r-md);overflow:hidden;align-self:center;margin:10px 10px 10px 0}
+.feed:not(.grid) .card-body{padding:12px 0 12px 14px;grid-column:1;display:flex;flex-direction:column;gap:5px}
+.feed:not(.grid) .card-footer{padding:0 0 12px 14px;grid-column:1;display:flex;align-items:center;gap:8px}
+
+/* card in grid mode */
+.feed.grid .card{display:flex;flex-direction:column}
+.feed.grid .card-img-wrap{width:100%;height:160px;overflow:hidden;flex-shrink:0}
+.feed.grid .card-body{padding:12px 14px 8px;flex:1;display:flex;flex-direction:column;gap:5px}
+.feed.grid .card-footer{padding:0 14px 12px;display:flex;align-items:center;gap:8px}
+
+.card-img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.card:hover .card-img{transform:scale(1.04)}
+.card-img-placeholder{width:100%;height:100%;background:var(--offset);display:flex;align-items:center;justify-content:center;color:var(--faint)}
+
+.card-meta{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.cat-badge{padding:2px 7px;border-radius:var(--r-full);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:white}
+.new-badge{padding:2px 7px;border-radius:var(--r-full);font-size:10px;font-weight:700;background:var(--red);color:white;letter-spacing:.03em}
+.card-title{font-size:14px;font-weight:600;line-height:1.35;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feed.grid .card-title{font-size:15px}
+.card-summary{font-size:12px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-source{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.card-actions{display:flex;gap:2px;align-items:center;flex-shrink:0}
+.act-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);color:var(--faint);transition:all var(--ease)}
+.act-btn:hover{background:var(--offset);color:var(--primary)}
+.act-btn.bookmarked{color:var(--gold)}
+.act-btn.bookmarked:hover{color:var(--gold);background:color-mix(in srgb,var(--gold) 15%,var(--offset))}
+
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 32px;color:var(--muted);gap:12px}
+.empty svg{color:var(--faint);opacity:.5}
+.empty h3{font-size:16px;color:var(--text)}
+.empty p{font-size:13px;max-width:30ch;line-height:1.6}
+
+/* SKELETON */
+@keyframes shim{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.sk{background:linear-gradient(90deg,var(--offset) 25%,var(--dynamic) 50%,var(--offset) 75%);background-size:200%;animation:shim 1.4s ease-in-out infinite;border-radius:var(--r-sm)}
+.sk-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:8px}
+
+/* MODAL (add RSS) */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px;width:420px;max-width:calc(100vw - 40px);box-shadow:var(--sh-lg);transform:translateY(12px) scale(.97);transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.modal-overlay.open .modal{transform:none}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.modal p{font-size:12px;color:var(--muted);margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:11px;font-weight:600;color:var(--muted)}
+.field input,.field select{padding:8px 12px;background:var(--offset);border:1px solid var(--border);border-radius:var(--r-md);font:inherit;font-size:13px;color:var(--text);transition:border-color var(--ease)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--primary)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-sec{padding:7px 16px;font-size:13px;border:1px solid var(--border);border-radius:var(--r-md);color:var(--muted)}
+.btn-sec:hover{background:var(--offset)}
+.btn-prim{padding:7px 16px;font-size:13px;background:var(--primary);color:var(--inv);border-radius:var(--r-md);font-weight:600}
+.btn-prim:hover{background:var(--primaryh)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px 16px;font-size:12px;color:var(--muted);box-shadow:var(--sh-md);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:300}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok svg{color:var(--green)}
+.toast.err svg{color:var(--red)}
+
+/* MOBILE */
+@media(max-width:768px){
+  .layout{flex-direction:column;padding:12px}
+  .sidebar{width:100%}
+  .nav-section .nav-btns{display:flex;flex-wrap:wrap;gap:4px}
+  .nav-btn{width:auto;padding:5px 10px;font-size:12px}
+  .src-section,.bottom-section{display:none}
+  .header-inner{padding:10px 16px}
+  .live-pill{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <svg class="logo-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+      HaberAkışı
+    </div>
+    <div class="live-pill"><span class="live-dot"></span>Canlı</div>
+    <div class="header-right">
+      <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Yenile
+      </button>
+      <button class="icon-btn" id="themeBtn" title="Tema">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="nav-section">
+      <div class="sidebar-label">Kategoriler</div>
+      <div class="nav-btns" id="catNav"></div>
+    </div>
+
+    <div class="src-section">
+      <div class="sidebar-label">Kaynaklar</div>
+      <div id="srcList"></div>
+      <button class="add-rss-btn" onclick="openModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Kaynak Ekle
+      </button>
+    </div>
+
+    <div class="bottom-section">
+      <div class="sidebar-label">Kaydedilenler</div>
+      <button class="nav-btn" id="savedBtn" onclick="showSaved()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        Kaydedilenler
+        <span class="nav-count" id="savedCnt">0</span>
+      </button>
+
+      <div class="sidebar-label" style="margin-top:14px">Oto-Yenileme</div>
+      <div class="auto-row">
+        <span style="font-size:12px">Her 5 dakika</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoTgl" checked onchange="toggleAuto(this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+      <div class="countdown" id="countdown">–</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Top -->
+    <div class="main-top">
+      <div>
+        <div class="page-title" id="pageTitle">Tüm Haberler</div>
+        <div class="page-meta" id="pageMeta">Yükleniyor…</div>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="listBtn" onclick="setView('list',this)" title="Liste">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <button class="view-btn" id="gridBtn" onclick="setView('grid',this)" title="Grid">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Trending -->
+    <div class="trending-bar" id="trendBar">
+      <div class="trending-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Trend
+      </div>
+      <div class="trending-items" id="trendItems"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input class="search-input" id="searchIn" placeholder="Haberlerde ara…" oninput="onSearch(this.value)">
+      </div>
+      <div class="sort-pills">
+        <button class="pill active" onclick="setSort('newest',this)">En Yeni</button>
+        <button class="pill" onclick="setSort('oldest',this)">En Eski</button>
+      </div>
+    </div>
+
+    <!-- Feed -->
+    <div class="feed" id="feed"></div>
+  </main>
+</div>
+
+<!-- ADD RSS MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h3>Özel RSS Kaynağı Ekle</h3>
+    <p>Herhangi bir RSS/Atom feed URL'si ekleyebilirsiniz.</p>
+    <div class="field">
+      <label>Kaynak Adı</label>
+      <input id="rssName" placeholder="Örn: Milliyet" type="text">
+    </div>
+    <div class="field">
+      <label>RSS URL</label>
+      <input id="rssUrl" placeholder="https://..." type="url">
+    </div>
+    <div class="field">
+      <label>Kategori</label>
+      <select id="rssCat">
+        <option value="gundem">Gündem</option>
+        <option value="ekonomi">Ekonomi</option>
+        <option value="spor">Spor</option>
+        <option value="teknoloji">Teknoloji</option>
+        <option value="dunya">Dünya</option>
+        <option value="saglik">Sağlık</option>
+        <option value="magazin">Magazin</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sec" onclick="closeModal()">İptal</button>
+      <button class="btn-prim" onclick="addCustomRSS()">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ===== THEME ===== */
+(()=>{
+  const btn=document.getElementById('themeBtn'),r=document.documentElement;
+  let t=r.getAttribute('data-theme')||'dark';
+  const moon='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  const sun='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  btn.innerHTML=t==='dark'?moon:sun;
+  btn.onclick=()=>{t=t==='dark'?'light':'dark';r.setAttribute('data-theme',t);btn.innerHTML=t==='dark'?moon:sun;};
+})();
+
+/* ===== CONFIG ===== */
+const CATS=[
+  {id:'all',   label:'Tümü',    color:'#6b7280'},
+  {id:'gundem',label:'Gündem',  color:'#dd6974'},
+  {id:'ekonomi',label:'Ekonomi',color:'#e8af34'},
+  {id:'spor',  label:'Spor',    color:'#6daa45'},
+  {id:'teknoloji',label:'Teknoloji',color:'#5591c7'},
+  {id:'dunya', label:'Dünya',   color:'#a86fdf'},
+  {id:'saglik',label:'Sağlık',  color:'#4f98a3'},
+  {id:'magazin',label:'Magazin',color:'#fdab43'},
+];
+
+let SOURCES=[
+  {id:'bbc_tr',   name:'BBC Türkçe', url:'https://feeds.bbci.co.uk/turkish/rss.xml',              cats:['dunya','gundem']},
+  {id:'hurriyet', name:'Hürriyet',   url:'https://www.hurriyet.com.tr/rss/anasayfa',              cats:['gundem','magazin']},
+  {id:'ntv',      name:'NTV',        url:'https://www.ntv.com.tr/gundem.rss',                     cats:['gundem']},
+  {id:'bloombt',  name:'BloombergHT',url:'https://www.bloomberght.com/rss',                       cats:['ekonomi']},
+  {id:'webtekno', name:'Webtekno',   url:'https://www.webtekno.com/feed.rss',                     cats:['teknoloji']},
+  {id:'shiftdel', name:'Shiftdelete',url:'https://shiftdelete.net/feed',                          cats:['teknoloji']},
+  {id:'fanatik',  name:'Fanatik',    url:'https://www.fanatik.com.tr/rss',                        cats:['spor']},
+  {id:'sabah',    name:'Sabah',      url:'https://www.sabah.com.tr/rss',                          cats:['gundem','dunya']},
+  {id:'haberturk',name:'Haberturk',  url:'https://www.haberturk.com/rss',                        cats:['gundem']},
+  {id:'dunya_g',  name:'Dünya Gaz.', url:'https://www.dunya.com/rss.xml',                        cats:['ekonomi']},
+  {id:'aa_spor',  name:'AA Spor',    url:'https://www.aa.com.tr/tr/rss/default?cat=spor',        cats:['spor']},
+  {id:'ensonhbr', name:'EnSonHaber', url:'https://www.ensonhaber.com/rss/anasayfa.xml',          cats:['gundem']},
+];
+
+const PROXY='https://corsproxy.io/?url=';
+let articles=[], saved=new Set(), read=new Set();
+let activeCat='all', activeSort='newest', searchQ='', viewMode='list';
+let enabledSrc=new Set(SOURCES.map(s=>s.id));
+let autoTimer=null, nextAt=null;
+
+/* ===== BOOT ===== */
+function boot(){
+  renderCatNav();
+  renderSrcList();
+  showSkeletons();
+  loadAll();
+  startAuto();
+}
+
+/* ===== CAT NAV ===== */
+function renderCatNav(){
+  document.getElementById('catNav').innerHTML=CATS.map(c=>`
+    <button class="nav-btn${c.id==='all'?' active':''}" data-cat="${c.id}" onclick="setCat('${c.id}',this)">
+      <span class="nav-dot" style="background:${c.color}"></span>${c.label}
+      <span class="nav-count" id="cnt_${c.id}">0</span>
+    </button>`).join('');
+}
+function setCat(id,el){
+  activeCat=id;
+  document.querySelectorAll('.nav-btn[data-cat]').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const c=CATS.find(x=>x.id===id);
+  document.getElementById('pageTitle').textContent=c.id==='all'?'Tüm Haberler':c.label+' Haberleri';
+  renderFeed();
+}
+
+/* ===== SRC LIST ===== */
+function renderSrcList(){
+  document.getElementById('srcList').innerHTML=SOURCES.map(s=>`
+    <div class="src-row">
+      <label><input type="checkbox" ${enabledSrc.has(s.id)?'checked':''} onchange="toggleSrc('${s.id}',this.checked)">${s.name}</label>
+    </div>`).join('');
+}
+function toggleSrc(id,on){on?enabledSrc.add(id):enabledSrc.delete(id);renderFeed();}
+
+/* ===== LOAD ===== */
+async function loadAll(){
+  const btn=document.getElementById('refreshBtn');
+  btn.classList.add('spin');
+  const res=await Promise.allSettled(SOURCES.map(s=>fetchRSS(s)));
+  let arr=[];
+  res.forEach(r=>{if(r.status==='fulfilled')arr=arr.concat(r.value);});
+  const seen=new Set();
+  articles=arr.filter(a=>{if(seen.has(a.title))return false;seen.add(a.title);return true;});
+  articles.sort((a,b)=>b.date-a.date);
+  updateCounts();
+  buildTrending();
+  renderFeed();
+  btn.classList.remove('spin');
+  const now=new Date();
+  toast(`${articles.length} haber yüklendi — ${now.toLocaleTimeString('tr-TR')}`,'ok');
+  document.getElementById('pageMeta').textContent=`Son güncelleme: ${now.toLocaleTimeString('tr-TR')} · ${articles.length} haber`;
+}
+
+async function fetchRSS(src){
+  try{
+    const res=await fetch(PROXY+encodeURIComponent(src.url),{signal:AbortSignal.timeout(9000)});
+    const txt=await res.text();
+    const xml=new DOMParser().parseFromString(txt,'application/xml');
+    const items=[...xml.querySelectorAll('item, entry')];
+    return items.slice(0,30).map(item=>{
+      const title=(item.querySelector('title')?.textContent||'').trim();
+      const link=(item.querySelector('link')?.textContent||item.querySelector('link')?.getAttribute('href')||'').trim();
+      const rawDate=item.querySelector('pubDate, published, updated')?.textContent;
+      const desc=(item.querySelector('description, summary')?.textContent||'').replace(/<[^>]+>/g,'').trim();
+      let img=item.querySelector('enclosure[type^="image"]')?.getAttribute('url')||
+               item.querySelector('media\:content,media:content')?.getAttribute('url')||
+               item.querySelector('media\:thumbnail,media:thumbnail')?.getAttribute('url')||'';
+      if(!img){const m=desc.match(/https?:[^\s"<]+\.(jpg|jpeg|png|webp)/i);if(m)img=m[0];}
+      if(!title||!link)return null;
+      const d=rawDate?new Date(rawDate):new Date();
+      return{id:btoa(encodeURIComponent(link)).replace(/[^a-z0-9]/gi,'').slice(0,18),title,link,summary:desc.slice(0,220),date:isNaN(d)?new Date():d,source:src.name,srcId:src.id,cats:src.cats,img};
+    }).filter(Boolean);
+  }catch{return [];}
+}
+
+/* ===== COUNTS ===== */
+function updateCounts(){
+  CATS.forEach(c=>{
+    const el=document.getElementById('cnt_'+c.id);
+    if(!el)return;
+    el.textContent=c.id==='all'?articles.length:articles.filter(a=>a.cats.includes(c.id)).length;
+  });
+}
+
+/* ===== TRENDING ===== */
+function buildTrending(){
+  const words={};
+  const stop=new Set(['bir','bu','da','de','mi','mu','ile','için','ve','ama','ya','ki','ne','en','daha','olan','olan','gibi','kadar','sonra','önce','yeni','büyük','son']);
+  articles.forEach(a=>{
+    a.title.toLowerCase().split(/\s+/).forEach(w=>{
+      w=w.replace(/[^a-züğışçö]/gi,'');
+      if(w.length>3&&!stop.has(w))words[w]=(words[w]||0)+1;
+    });
+  });
+  const top=Object.entries(words).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([w])=>w);
+  document.getElementById('trendItems').innerHTML=top.map(w=>`<span class="trend-chip" onclick="setSearch('${w}')">${w}</span>`).join('');
+}
+
+function setSearch(q){document.getElementById('searchIn').value=q;onSearch(q);}
+
+/* ===== RENDER ===== */
+function filtered(){
+  let arr=articles.filter(a=>enabledSrc.has(a.srcId));
+  if(activeCat!=='all')arr=arr.filter(a=>a.cats.includes(activeCat));
+  if(searchQ){const q=searchQ.toLowerCase();arr=arr.filter(a=>a.title.toLowerCase().includes(q)||a.summary.toLowerCase().includes(q)||a.source.toLowerCase().includes(q));}
+  if(activeSort==='oldest')arr=[...arr].reverse();
+  return arr;
+}
+
+function renderFeed(){
+  const arr=filtered();
+  const feed=document.getElementById('feed');
+  feed.className='feed'+(viewMode==='grid'?' grid':'');
+  if(!arr.length){
+    feed.innerHTML=`<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><h3>${searchQ?'Sonuç bulunamadı':'Haber bulunamadı'}</h3><p>${searchQ?'"'+esc(searchQ)+'" için haber yok.':'Bu kategoride haber bulunmuyor.'}</p></div>`;
+    return;
+  }
+  document.getElementById('pageMeta').textContent=`${arr.length} haber`;
+  feed.innerHTML=arr.map((a,i)=>cardHtml(a,i)).join('');
+}
+
+function cardHtml(a,i){
+  const cat=CATS.find(c=>a.cats.includes(c.id))||CATS[1];
+  const isNew=(Date.now()-a.date)<3600000;
+  const bk=saved.has(a.id);
+  const rd=read.has(a.id);
+  const ago=timeAgo(a.date);
+  const delay=Math.min(i*0.04,0.6);
+  const imgHtml=a.img
+    ?`<img class="card-img" src="${esc(a.img)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-img-placeholder><svg width=28 height=28 viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><polyline points=\'21 15 16 10 5 21\'/></svg></div>'">`
+    :`<div class="card-img-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+
+  return `<article class="card${rd?' read':''}" style="animation-delay:${delay}s">
+    <div class="card-img-wrap">${imgHtml}</div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:${cat.color}">${cat.label}</span>
+        ${isNew?'<span class="new-badge">YENİ</span>':''}
+        <span>${ago}</span>
+      </div>
+      <h2 class="card-title"><a href="${esc(a.link)}" target="_blank" rel="noopener" onclick="markRead('${a.id}')">${esc(a.title)}</a></h2>
+      ${a.summary?`<p class="card-summary">${esc(a.summary)}</p>`:''}
+    </div>
+    <div class="card-footer">
+      <span class="card-source">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        ${esc(a.source)}
+      </span>
+      <div class="card-actions">
+        <button class="act-btn${bk?' bookmarked':''}" onclick="toggleSave('${a.id}')" title="${bk?'Kaydı kaldır':'Kaydet'}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="${bk?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        </button>
+        <a class="act-btn" href="${esc(a.link)}" target="_blank" rel="noopener" onclick="markRead('${a.id}')" title="Haberi aç">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ===== INTERACTIONS ===== */
+function markRead(id){read.add(id);setTimeout(()=>renderFeed(),200);}
+
+function toggleSave(id){
+  if(saved.has(id)){saved.delete(id);toast('Kayıt kaldırıldı','ok');}
+  else{saved.add(id);toast('Haber kaydedildi','ok');}
+  document.getElementById('savedCnt').textContent=saved.size;
+  renderFeed();
+}
+
+function showSaved(){
+  document.querySelectorAll('.nav-btn[data-cat]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('savedBtn').classList.add('active');
+  document.getElementById('pageTitle').textContent='Kaydedilenler';
+  const arr=articles.filter(a=>saved.has(a.id));
+  const feed=document.getElementById('feed');
+  feed.className='feed'+(viewMode==='grid'?' grid':'');
+  if(!arr.length){
+    feed.innerHTML=`<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg><h3>Henüz kayıtlı haber yok</h3><p>Yer imi simgesine tıklayarak haber kaydedin.</p></div>`;
+  }else{
+    feed.innerHTML=arr.map((a,i)=>cardHtml(a,i)).join('');
+  }
+}
+
+/* ===== VIEW / SORT / SEARCH ===== */
+function setView(v,el){
+  viewMode=v;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderFeed();
+}
+function setSort(s,el){
+  activeSort=s;
+  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderFeed();
+}
+function onSearch(v){searchQ=v;renderFeed();}
+
+/* ===== CUSTOM RSS MODAL ===== */
+function openModal(){document.getElementById('modalOverlay').classList.add('open');}
+function closeModal(e){if(!e||e.target===document.getElementById('modalOverlay'))document.getElementById('modalOverlay').classList.remove('open');}
+function addCustomRSS(){
+  const name=document.getElementById('rssName').value.trim();
+  const url=document.getElementById('rssUrl').value.trim();
+  const cat=document.getElementById('rssCat').value;
+  if(!name||!url){toast('Ad ve URL zorunlu','err');return;}
+  const id='custom_'+Date.now();
+  SOURCES.push({id,name,url,cats:[cat]});
+  enabledSrc.add(id);
+  renderSrcList();
+  closeModal();
+  toast(`"${name}" eklendi, yükleniyor…`,'ok');
+  fetchRSS({id,name,url,cats:[cat]}).then(arr=>{
+    articles=[...arr,...articles];
+    updateCounts();buildTrending();renderFeed();
+    toast(`"${name}" yüklendi: ${arr.length} haber`,'ok');
+  });
+}
+
+/* ===== AUTO REFRESH ===== */
+function startAuto(){
+  clearInterval(autoTimer);
+  nextAt=Date.now()+5*60000;
+  autoTimer=setInterval(()=>{showSkeletons();loadAll();nextAt=Date.now()+5*60000;},5*60000);
+  setInterval(updateCountdown,10000);updateCountdown();
+}
+function toggleAuto(on){
+  if(on)startAuto();
+  else{clearInterval(autoTimer);autoTimer=null;nextAt=null;document.getElementById('countdown').textContent='Kapalı';}
+}
+function updateCountdown(){
+  const el=document.getElementById('countdown');
+  if(!nextAt||!document.getElementById('autoTgl').checked){el.textContent='Kapalı';return;}
+  const s=Math.max(0,Math.round((nextAt-Date.now())/1000));
+  el.textContent=`Sonraki: ${Math.floor(s/60)}d ${s%60}s`;
+}
+function doRefresh(){showSkeletons();loadAll();}
+
+/* ===== SKELETONS ===== */
+function showSkeletons(){
+  const feed=document.getElementById('feed');
+  feed.className='feed';
+  feed.innerHTML=Array(8).fill(0).map(()=>`
+    <div class="sk-card" style="display:grid;grid-template-columns:1fr 100px;gap:12px">
+      <div style="display:flex;flex-direction:column;gap:8px;padding:2px 0">
+        <div class="sk" style="height:12px;width:45%"></div>
+        <div class="sk" style="height:18px;width:88%"></div>
+        <div class="sk" style="height:18px;width:68%"></div>
+        <div class="sk" style="height:12px;width:100%"></div>
+        <div class="sk" style="height:12px;width:72%"></div>
+      </div>
+      <div class="sk" style="height:72px;border-radius:8px;align-self:center"></div>
+    </div>`).join('');
+}
+
+/* ===== TOAST ===== */
+let toastTm;
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  el.className='toast show '+type;
+  clearTimeout(toastTm);
+  toastTm=setTimeout(()=>el.classList.remove('show'),3200);
+}
+
+/* ===== UTILS ===== */
+function timeAgo(d){
+  const m=Math.floor((Date.now()-d)/60000);
+  if(m<1)return'Az önce';if(m<60)return m+'dk önce';
+  const h=Math.floor(m/60);if(h<24)return h+'sa önce';
+  return Math.floor(h/24)+'g önce';
+}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+boot();
+</script>
+</body>
+</html>
