@@ -469,12 +469,19 @@ const CATS=[
   {id:'teknoloji', label:'Teknoloji', color:'#3b82f6'},
 ];
 
-// GERÇEK RSS KAYNAKLARI (Otomatik Haber Çekimi İçin)
+// GERÇEK RSS KAYNAKLARI
 const RSS_SOURCES = [
   { url: 'https://www.trthaber.com/sondakika.rss', source: 'TRT Haber', cat: 'gundem' },
   { url: 'https://www.donanimhaber.com/rss/tum', source: 'DonanımHaber', cat: 'teknoloji' },
   { url: 'https://www.haberturk.com/rss/ekonomi.xml', source: 'Habertürk Ek.', cat: 'ekonomi' },
   { url: 'https://www.ntvspor.net/rss', source: 'NTV Spor', cat: 'spor' }
+];
+
+// ÇOKLU (YEDEKLİ) PROXY LİSTESİ - Biri çökerse diğeri devreye girer
+const PROXIES = [
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
 ];
 
 let articles=[], saved=new Set(JSON.parse(localStorage.getItem('ha_saved')||'[]')), read=new Set();
@@ -517,7 +524,22 @@ function buildSrcList(){
 }
 function toggleSrc(id,on){on?enabledSrc.add(id):enabledSrc.delete(id);renderFeed();}
 
-/* ===== LOAD (HIZLI & PARALEL RSS ÇEKİMİ) ===== */
+/* ===== YEDEKLİ RSS ÇEKİCİ (Multi-Proxy Fetch) ===== */
+async function fetchRSS(url) {
+  for (const getProxyUrl of PROXIES) {
+    try {
+      const response = await fetch(getProxyUrl(url), { cache: 'no-store' });
+      if (response.ok) {
+        return await response.text();
+      }
+    } catch (e) {
+      console.warn("Proxy başarısız, diğerine geçiliyor...");
+    }
+  }
+  throw new Error("Tüm proxy servisleri başarısız oldu.");
+}
+
+/* ===== LOAD ===== */
 async function loadData(){
   const btn=document.getElementById('refreshBtn');
   btn.classList.add('spin');
@@ -525,37 +547,28 @@ async function loadData(){
   
   let allNews = [];
 
-  // Haber kaynaklarını aynı anda (paralel) çekiyoruz ki biri takılırsa diğerleri etkilenmesin
   const promises = RSS_SOURCES.map(async (source) => {
     try {
-      // Daha hızlı ve limitsiz bir XML proxy'si
-      const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(source.url)}`;
-      const res = await fetch(proxyUrl, { cache: 'no-store' });
-      const xmlText = await res.text();
+      const xmlText = await fetchRSS(source.url);
       
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-      const items = xmlDoc.querySelectorAll("item");
+      const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 30); // Her siteden son 30 haber
       
       items.forEach(item => {
         const title = item.querySelector("title")?.textContent || "";
         const link = item.querySelector("link")?.textContent || "";
         let desc = item.querySelector("description")?.textContent || "";
         
-        // Görseli yakalama (farklı RSS formatlarını desteklemek için)
         let img = "";
         const enclosure = item.querySelector("enclosure");
         const mediaContent = item.getElementsByTagNameNS("*", "content")[0]; 
         
         if (enclosure) img = enclosure.getAttribute("url");
         else if (mediaContent) img = mediaContent.getAttribute("url");
-        
         if (!img) img = extractImgFromDesc(desc) || "";
 
-        // Tarihi güvenli şekilde al
         const pubDate = item.querySelector("pubDate")?.textContent || new Date().toISOString();
-        
-        // Açıklamadaki HTML etiketlerini ve gereksiz boşlukları temizle
         let cleanSummary = desc.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/<[^>]*>?/gm, '').trim().substring(0, 150) + '...';
 
         allNews.push({
@@ -570,17 +583,16 @@ async function loadData(){
         });
       });
     } catch(err) {
-      console.warn(`${source.source} yüklenirken hata oluştu veya zaman aşımına uğradı.`);
+      console.warn(`${source.source} yüklenirken hata oluştu.`);
     }
   });
 
-  // Tüm sitelerin yüklenmesini bekle (biri çökse bile Promise.allSettled devam eder)
   await Promise.allSettled(promises);
 
   try {
     if (allNews.length === 0) throw new Error("Hiçbir haber kaynağından veri gelmedi.");
 
-    // Tarihe göre en yeniden eskiye sırala
+    // Tarihe göre sırala
     articles = allNews.sort((a,b) => b.date - a.date);
     
     buildSrcList();
@@ -596,8 +608,8 @@ async function loadData(){
   } catch(err) {
     document.getElementById('feed').innerHTML=`<div class="empty">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-      <h3>Haberler Alınamadı</h3>
-      <p>İnternet bağlantınızı kontrol edin veya tarayıcınızdaki Reklam Engelleyiciyi (AdBlock) bu sayfa için kapatın.</p>
+      <h3>Veriler Alınamadı</h3>
+      <p>Lütfen tarayıcınızın reklam engelleyicisini (AdBlock, Brave Shields) bu site için kapatıp tekrar deneyin.</p>
     </div>`;
     toast('Haberler alınamadı','err');
   }
@@ -614,7 +626,6 @@ function extractImgFromDesc(html) {
 /* ===== STATS & COUNTS ===== */
 function updateStats(){
   document.getElementById('s-total').textContent=articles.length;
-  // Son 6 saat (6 * 3600000 ms) içindeki haberler
   document.getElementById('s-new').textContent=articles.filter(a=>a.date&&(Date.now()-a.date)<21600000).length;
   document.getElementById('s-src').textContent=new Set(articles.map(a=>a.source)).size;
 }
@@ -627,7 +638,7 @@ function updateCounts(){
   });
 }
 
-/* ===== TRENDING (KELİME ANALİZİ) ===== */
+/* ===== TRENDING ===== */
 function buildTrending(){
   const words={};
   const stop=new Set(['bir','bu','da','de','ile','için','ve','ama','ya','ki','ne','en','daha','olan','gibi','kadar','sonra','önce','yeni','son','büyük','çok','oldu','var','mı','mi','mu','mü','göre']);
@@ -716,7 +727,7 @@ function featuredHtml(a){
 
 function cardHtml(a,i){
   const cat=CATS.find(c=>c.id===a.cat)||CATS[1];
-  const isNew=a.date&&(Date.now()-a.date)<21600000; // 6 saat
+  const isNew=a.date&&(Date.now()-a.date)<21600000;
   const bk=saved.has(a.id);
   const rd=read.has(a.id);
   const delay=Math.min(i*0.02, 0.3);
