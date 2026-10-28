@@ -469,78 +469,18 @@ const CATS=[
   {id:'teknoloji', label:'Teknoloji', color:'#3b82f6'},
 ];
 
-/* ===== LOAD (DAHA GÜVENLİ & LİMİTSİZ RSS ÇEKİMİ) ===== */
-async function loadData(){
-  const btn=document.getElementById('refreshBtn');
-  btn.classList.add('spin');
-  showSkeletons();
-  
-  try{
-    let allNews = [];
-    
-    // Rss2json limitlerine takılmamak için AllOrigins CORS Proxy ve DOMParser kullanıyoruz
-    for(const source of RSS_SOURCES) {
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
-      const res = await fetch(proxyUrl);
-      const data = await res.json();
-      
-      if(data.contents) {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
-        
-        items.forEach(item => {
-          const title = item.querySelector("title")?.textContent || "";
-          const link = item.querySelector("link")?.textContent || "";
-          let desc = item.querySelector("description")?.textContent || "";
-          
-          // Görseli yakalama (enclosure veya açıklama içinden)
-          let img = "";
-          const enclosure = item.querySelector("enclosure");
-          if(enclosure) img = enclosure.getAttribute("url");
-          if(!img) img = extractImgFromDesc(desc);
+// GERÇEK RSS KAYNAKLARI (Otomatik Haber Çekimi İçin)
+const RSS_SOURCES = [
+  { url: 'https://www.trthaber.com/sondakika.rss', source: 'TRT Haber', cat: 'gundem' },
+  { url: 'https://www.donanimhaber.com/rss/tum', source: 'DonanımHaber', cat: 'teknoloji' },
+  { url: 'https://www.haberturk.com/rss/ekonomi.xml', source: 'Habertürk Ek.', cat: 'ekonomi' },
+  { url: 'https://www.ntvspor.net/rss', source: 'NTV Spor', cat: 'spor' }
+];
 
-          // Tarih parse etme
-          const pubDate = item.querySelector("pubDate")?.textContent || new Date().toISOString();
-
-          allNews.push({
-            id: item.querySelector("guid")?.textContent || link,
-            title: title,
-            summary: desc.replace(/<[^>]*>?/gm, '').substring(0, 180) + '...',
-            link: link,
-            img: img,
-            cat: source.cat,
-            source: source.source,
-            date: new Date(pubDate.replace(/-/g, '/')).getTime() // Safari uyumluluğu için
-          });
-        });
-      }
-    }
-    
-    // Tarihe göre en yeniden eskiye sırala
-    articles = allNews.sort((a,b) => b.date - a.date);
-    
-    buildSrcList();
-    updateCounts();
-    buildTrending();
-    updateStats();
-    renderFeed();
-    
-    const now = new Date();
-    document.getElementById('pageMeta').textContent=`Son güncelleme: ${now.toLocaleTimeString('tr-TR')} · Toplam ${articles.length} içerik`;
-    toast(`${articles.length} haber başarıyla yüklendi`,'ok');
-    
-  } catch(err) {
-    console.error(err);
-    document.getElementById('feed').innerHTML=`<div class="empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-      <h3>Haberler Alınamadı</h3>
-      <p>Bağlantınızı veya reklam engelleyicinizi kontrol edin. Birazdan tekrar deneyin.</p>
-    </div>`;
-    toast('Bağlantı hatası oluştu','err');
-  }
-  btn.classList.remove('spin');
-}
+let articles=[], saved=new Set(JSON.parse(localStorage.getItem('ha_saved')||'[]')), read=new Set();
+let activeCat='all', activeSort='newest', searchQ='', viewMode='list';
+let enabledSrc=new Set();
+let autoTimer = setInterval(loadData, 300000); // 5 Dk'da bir otomatik güncelle
 
 /* ===== BOOT ===== */
 function boot(){
@@ -577,35 +517,69 @@ function buildSrcList(){
 }
 function toggleSrc(id,on){on?enabledSrc.add(id):enabledSrc.delete(id);renderFeed();}
 
-/* ===== LOAD (OTOMATİK RSS ÇEKİMİ) ===== */
+/* ===== LOAD (HIZLI & PARALEL RSS ÇEKİMİ) ===== */
 async function loadData(){
   const btn=document.getElementById('refreshBtn');
   btn.classList.add('spin');
   showSkeletons();
   
-  try{
-    let allNews = [];
-    
-    // Rss2Json servisi ile haberleri çekiyoruz
-    for(const source of RSS_SOURCES) {
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`);
-      const data = await res.json();
+  let allNews = [];
+
+  // Haber kaynaklarını aynı anda (paralel) çekiyoruz ki biri takılırsa diğerleri etkilenmesin
+  const promises = RSS_SOURCES.map(async (source) => {
+    try {
+      // Daha hızlı ve limitsiz bir XML proxy'si
+      const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(source.url)}`;
+      const res = await fetch(proxyUrl, { cache: 'no-store' });
+      const xmlText = await res.text();
       
-      if(data.status === 'ok') {
-        const items = data.items.map(item => ({
-          id: item.guid || item.link,
-          title: item.title,
-          summary: item.description.replace(/<[^>]*>?/gm, '').substring(0, 180) + '...',
-          link: item.link,
-          img: item.thumbnail || item.enclosure?.link || extractImgFromDesc(item.description) || '',
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+      const items = xmlDoc.querySelectorAll("item");
+      
+      items.forEach(item => {
+        const title = item.querySelector("title")?.textContent || "";
+        const link = item.querySelector("link")?.textContent || "";
+        let desc = item.querySelector("description")?.textContent || "";
+        
+        // Görseli yakalama (farklı RSS formatlarını desteklemek için)
+        let img = "";
+        const enclosure = item.querySelector("enclosure");
+        const mediaContent = item.getElementsByTagNameNS("*", "content")[0]; 
+        
+        if (enclosure) img = enclosure.getAttribute("url");
+        else if (mediaContent) img = mediaContent.getAttribute("url");
+        
+        if (!img) img = extractImgFromDesc(desc) || "";
+
+        // Tarihi güvenli şekilde al
+        const pubDate = item.querySelector("pubDate")?.textContent || new Date().toISOString();
+        
+        // Açıklamadaki HTML etiketlerini ve gereksiz boşlukları temizle
+        let cleanSummary = desc.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/<[^>]*>?/gm, '').trim().substring(0, 150) + '...';
+
+        allNews.push({
+          id: item.querySelector("guid")?.textContent || link,
+          title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1'),
+          summary: cleanSummary,
+          link: link,
+          img: img,
           cat: source.cat,
           source: source.source,
-          date: new Date(item.pubDate.replace(/-/g, '/')).getTime() // Safarifix
-        }));
-        allNews = allNews.concat(items);
-      }
+          date: new Date(pubDate.replace(/-/g, '/')).getTime()
+        });
+      });
+    } catch(err) {
+      console.warn(`${source.source} yüklenirken hata oluştu veya zaman aşımına uğradı.`);
     }
-    
+  });
+
+  // Tüm sitelerin yüklenmesini bekle (biri çökse bile Promise.allSettled devam eder)
+  await Promise.allSettled(promises);
+
+  try {
+    if (allNews.length === 0) throw new Error("Hiçbir haber kaynağından veri gelmedi.");
+
     // Tarihe göre en yeniden eskiye sırala
     articles = allNews.sort((a,b) => b.date - a.date);
     
@@ -619,18 +593,20 @@ async function loadData(){
     document.getElementById('pageMeta').textContent=`Son güncelleme: ${now.toLocaleTimeString('tr-TR')} · Toplam ${articles.length} içerik`;
     toast(`${articles.length} haber başarıyla yüklendi`,'ok');
     
-  }catch(err){
+  } catch(err) {
     document.getElementById('feed').innerHTML=`<div class="empty">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
       <h3>Haberler Alınamadı</h3>
-      <p>Bağlantınızı kontrol edin veya birazdan tekrar deneyin.</p>
+      <p>İnternet bağlantınızı kontrol edin veya tarayıcınızdaki Reklam Engelleyiciyi (AdBlock) bu sayfa için kapatın.</p>
     </div>`;
-    toast('Bağlantı hatası oluştu','err');
+    toast('Haberler alınamadı','err');
   }
+  
   btn.classList.remove('spin');
 }
 
 function extractImgFromDesc(html) {
+  if(!html) return null;
   const match = html.match(/<img[^>]+src="([^">]+)"/);
   return match ? match[1] : null;
 }
