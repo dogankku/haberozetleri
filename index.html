@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HaberAkışı – Canlı & Otomatik Haber Takibi</title>
+<title>HaberAkışı – Tüm Medya Canlı Takip</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -63,6 +63,7 @@ a { color: inherit; text-decoration: none; transition: all var(--ease); }
 .nav-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .nav-count { margin-left: auto; font-size: 11px; font-weight: 600; background: var(--surface); color: var(--muted); padding: 2px 8px; border-radius: var(--r-full); border: 1px solid var(--border); }
 .nav-btn.active .nav-count { background: var(--primary); color: white; border-color: var(--primary); }
+.src-section { max-height: 400px; overflow-y: auto; scrollbar-width: thin; }
 .src-row { display: flex; align-items: center; padding: 6px 12px; border-radius: var(--r-md); font-size: 13px; color: var(--muted); }
 .src-row:hover { background: var(--offset); color: var(--text); }
 .src-row label { display: flex; align-items: center; gap: 10px; cursor: pointer; width: 100%; }
@@ -157,7 +158,7 @@ a { color: inherit; text-decoration: none; transition: all var(--ease); }
 .toast { position: fixed; bottom: 32px; right: 32px; background: var(--text); color: var(--bg); border-radius: var(--r-lg); padding: 14px 24px; font-size: 14px; font-weight: 600; box-shadow: var(--sh-lg); display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.16,1,0.3,1); pointer-events: none; z-index: 999; }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.ok svg { color: var(--green); }
-.toast.err svg { color: var(--gold); } /* Uyarı rengi */
+.toast.err svg { color: var(--gold); }
 
 @media(max-width: 900px) {
   .layout { flex-direction: column; padding: 16px; gap: 20px; }
@@ -188,7 +189,7 @@ a { color: inherit; text-decoration: none; transition: all var(--ease); }
       HaberAkışı
     </div>
     <div class="header-divider"></div>
-    <div class="live-pill" id="connStatus"><span class="live-dot"></span>Canlı Bağlantı</div>
+    <div class="live-pill" id="connStatus"><span class="live-dot"></span>Haberler Aranıyor...</div>
     <div class="header-right">
       <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
@@ -232,7 +233,7 @@ a { color: inherit; text-decoration: none; transition: all var(--ease); }
     <div class="main-top">
       <div>
         <div class="page-title" id="pageTitle">Tüm Haberler</div>
-        <div class="page-meta" id="pageMeta">Veriler yükleniyor...</div>
+        <div class="page-meta" id="pageMeta">Bütün Türkiye medyası taranıyor...</div>
       </div>
       <div class="view-toggle">
         <button class="view-btn active" onclick="setView('list',this)" title="Liste">
@@ -283,7 +284,7 @@ a { color: inherit; text-decoration: none; transition: all var(--ease); }
   btn.onclick=()=>{t=t==='dark'?'light':'dark';r.setAttribute('data-theme',t);localStorage.setItem('ha_theme',t);update();};
 })();
 
-/* CONFIG & MOCK DATA (ÇÖKMEYİ ENGELLEYEN YEDEK VERİLER) */
+/* CATEGORIES */
 const CATS=[
   {id:'all', label:'Tümü', color:'#64748b'},
   {id:'gundem', label:'Gündem', color:'#ef4444'},
@@ -292,18 +293,30 @@ const CATS=[
   {id:'teknoloji', label:'Teknoloji', color:'#3b82f6'},
 ];
 
+/* TÜM MEDYA KAYNAKLARI (16 Farklı Haber Sitesi) */
 const RSS_SOURCES = [
+  // Gündem
   { url: 'https://www.trthaber.com/sondakika.rss', source: 'TRT Haber', cat: 'gundem' },
-  { url: 'https://www.donanimhaber.com/rss/tum', source: 'DonanımHaber', cat: 'teknoloji' },
-  { url: 'https://www.haberturk.com/rss/ekonomi.xml', source: 'Habertürk Ek.', cat: 'ekonomi' },
-  { url: 'https://www.ntvspor.net/rss', source: 'NTV Spor', cat: 'spor' }
-];
+  { url: 'https://www.hurriyet.com.tr/rss/anasayfa', source: 'Hürriyet', cat: 'gundem' },
+  { url: 'https://www.sozcu.com.tr/rss/tum-haberler.xml', source: 'Sözcü', cat: 'gundem' },
+  { url: 'https://www.sabah.com.tr/rss/sondakika.xml', source: 'Sabah', cat: 'gundem' },
+  { url: 'https://www.haberturk.com/rss/manset.xml', source: 'Habertürk', cat: 'gundem' },
+  { url: 'https://www.cnnturk.com/feed/rss/all/news', source: 'CNN Türk', cat: 'gundem' },
+  { url: 'https://www.milliyet.com.tr/rss/rssNew/sondakikaRss.xml', source: 'Milliyet', cat: 'gundem' },
 
-const MOCK_NEWS = [
-  { id: 'm1', title: 'Merkez Bankası Para Politikası Kurulu faiz kararını açıkladı', summary: 'Merkez Bankası PPK toplantısı sonrası yapılan açıklamaya göre politika faizi piyasa beklentileri doğrultusunda sabit tutuldu.', link: '#', img: 'https://icdn.ensonhaber.com/resimler/diger/kok/2023/06/22/tcmb_9826.jpg', cat: 'ekonomi', source: 'Habertürk Ek.', date: Date.now() - 3600000 },
-  { id: 'm2', title: 'Yapay Zeka yarışında yeni perde: Teknoloji devleri yeni dil modellerini duyurdu', summary: 'Silikon Vadisi şirketleri peş peşe yeni yapay zeka modellerini tanıtırken, uzmanlar güvenlik ve veri gizliliği konusundaki endişeleri dile getirmeye devam ediyor.', link: '#', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000', cat: 'teknoloji', source: 'DonanımHaber', date: Date.now() - 7200000 },
-  { id: 'm3', title: 'Süper Lig\'de nefes kesen derbi hazırlıkları tamamlandı', summary: 'Hafta sonu oynanacak dev derbi öncesi takımlar son antrenmanlarını basına kapalı olarak gerçekleştirdi. Biletler dakikalar içinde tükendi.', link: '#', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&q=80&w=1000', cat: 'spor', source: 'NTV Spor', date: Date.now() - 14400000 },
-  { id: 'm4', title: 'Bakanlık yeni destek paketini duyurdu: Kimler faydalanabilecek?', summary: 'İlgili bakanlık tarafından yapılan açıklamada, küçük esnaf ve KOBİ\'ler için hazırlanan yeni kredi destek paketinin detayları paylaşıldı. Başvurular yarın başlıyor.', link: '#', img: '', cat: 'gundem', source: 'TRT Haber', date: Date.now() - 18000000 },
+  // Ekonomi
+  { url: 'https://www.haberturk.com/rss/ekonomi.xml', source: 'HT Ekonomi', cat: 'ekonomi' },
+  { url: 'https://www.cnnturk.com/feed/rss/ekonomi/news', source: 'CNN Ekonomi', cat: 'ekonomi' },
+  
+  // Spor
+  { url: 'https://www.ntvspor.net/rss', source: 'NTV Spor', cat: 'spor' },
+  { url: 'https://www.fotomac.com.tr/rss/anasayfa.xml', source: 'Fotomaç', cat: 'spor' },
+  { url: 'https://www.fanatik.com.tr/rss', source: 'Fanatik', cat: 'spor' },
+
+  // Teknoloji
+  { url: 'https://www.donanimhaber.com/rss/tum', source: 'DonanımHaber', cat: 'teknoloji' },
+  { url: 'https://shiftdelete.net/feed', source: 'ShiftDelete', cat: 'teknoloji' },
+  { url: 'https://www.log.com.tr/feed/', source: 'LOG', cat: 'teknoloji' }
 ];
 
 let articles=[], saved=new Set(JSON.parse(localStorage.getItem('ha_saved')||'[]')), read=new Set();
@@ -323,7 +336,60 @@ function buildSrcList(){
 }
 function toggleSrc(id,on){on?enabledSrc.add(id):enabledSrc.delete(id);renderFeed();}
 
-/* UNBREAKABLE DATA LOADER */
+/* AGRESİF YEDEKLİ FETCH (CORS ATLATICI) */
+async function fetchRSS(url) {
+  // 1. AllOrigins (En limitsiz CORS Proxy - DOMParser ile tarayıcıda çözülecek)
+  try {
+    let res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    let data = await res.json();
+    if (data.contents) return { rawText: data.contents, type: 'xml' };
+  } catch(e) {}
+  
+  // 2. Eğer AllOrigins çökerse RSS2JSON
+  try {
+    let res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+    let data = await res.json();
+    if (data.status === 'ok') return { rawData: data.items, type: 'json' };
+  } catch(e) {}
+
+  throw new Error("Bağlantı Engellendi");
+}
+
+/* HABER VERİSİNİ DÜZENLEME STANDARTLAŞTIRICISI */
+function parseItem(item, source, type) {
+  let id, title, summary, link, img, dateRaw;
+
+  if (type === 'json') {
+    id = item.guid || item.link;
+    title = item.title; summary = item.description; link = item.link;
+    img = item.thumbnail || item.enclosure?.link || extractImgFromDesc(summary) || "";
+    dateRaw = item.pubDate;
+  } else {
+    title = item.querySelector("title")?.textContent || "";
+    link = item.querySelector("link")?.textContent || "";
+    id = item.querySelector("guid")?.textContent || link;
+    summary = item.querySelector("description")?.textContent || item.getElementsByTagNameNS("*", "encoded")[0]?.textContent || "";
+    
+    let enclosure = item.querySelector("enclosure");
+    let media = item.getElementsByTagNameNS("*", "content")[0] || item.getElementsByTagNameNS("*", "thumbnail")[0];
+    
+    if (enclosure) img = enclosure.getAttribute("url");
+    else if (media) img = media.getAttribute("url");
+    if (!img) img = extractImgFromDesc(summary) || "";
+    
+    dateRaw = item.querySelector("pubDate")?.textContent || new Date().toISOString();
+  }
+
+  // Temizlik İşlemleri
+  title = title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim();
+  summary = summary.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/<[^>]*>?/gm, '').trim().substring(0, 160) + '...';
+  let parsedDate = new Date(dateRaw.replace(/-/g, '/')).getTime();
+  if (isNaN(parsedDate)) parsedDate = Date.now();
+
+  return { id, title, summary, link, img, cat: source.cat, source: source.source, date: parsedDate };
+}
+
+/* TÜM MEDYAYI PARALEL ÇEKME */
 async function loadData(){
   const btn=document.getElementById('refreshBtn');
   btn.classList.add('spin');
@@ -331,49 +397,48 @@ async function loadData(){
   
   let allNews = [];
   
-  // Birinci Yöntem: RSS2JSON API (En Güveniliri)
   const promises = RSS_SOURCES.map(async (source) => {
     try {
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`, { cache: 'no-store' });
-      const data = await res.json();
-      if(data.status === 'ok') {
-        data.items.slice(0, 15).forEach(item => {
-          allNews.push({
-            id: item.guid || item.link,
-            title: item.title,
-            summary: item.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...',
-            link: item.link,
-            img: item.thumbnail || item.enclosure?.link || extractImgFromDesc(item.description) || "",
-            cat: source.cat,
-            source: source.source,
-            date: new Date(item.pubDate.replace(/-/g, '/')).getTime()
-          });
+      const fetched = await fetchRSS(source.url);
+      
+      if (fetched.type === 'json') {
+        fetched.rawData.slice(0, 15).forEach(item => {
+          allNews.push(parseItem(item, source, 'json'));
+        });
+      } else if (fetched.type === 'xml') {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(fetched.rawText, "text/xml");
+        const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 15);
+        items.forEach(item => {
+          allNews.push(parseItem(item, source, 'xml'));
         });
       }
     } catch(err) {
-      console.warn(source.source + " API'den çekilemedi.");
+      console.warn(`${source.source} alınamadı.`);
     }
   });
 
+  // Tüm medya kanallarını aynı anda bitirmesini bekle
   await Promise.allSettled(promises);
 
-  // EĞER AĞ / TARAYICI HER ŞEYİ ENGELLİYORSA MOCK VERİYE GEÇ (ÇÖKMEYİ ENGELLE)
-  if (allNews.length === 0) {
-    allNews = [...MOCK_NEWS];
-    document.getElementById('connStatus').innerHTML = `<span class="live-dot" style="background:var(--gold); box-shadow:0 0 8px var(--gold)"></span>Çevrimdışı Mod`;
-    document.getElementById('connStatus').style.background = "color-mix(in srgb, var(--gold) 15%, transparent)";
-    document.getElementById('connStatus').style.borderColor = "color-mix(in srgb, var(--gold) 30%, transparent)";
-    toast('Bağlantı engellendi. Örnek veriler gösteriliyor.', 'err');
-  } else {
-    document.getElementById('connStatus').innerHTML = `<span class="live-dot"></span>Canlı Takip`;
+  if (allNews.length > 0) {
+    articles = allNews.sort((a,b) => b.date - a.date);
+    
+    document.getElementById('connStatus').innerHTML = `<span class="live-dot"></span>Tam Kapsamlı Tarama Aktif`;
     document.getElementById('connStatus').style.background = "color-mix(in srgb, var(--green) 15%, transparent)";
-    toast(`${allNews.length} haber başarıyla yüklendi`, 'ok');
+    toast(`Tüm medyadan ${articles.length} haber toplandı.`, 'ok');
+    
+    buildSrcList(); updateCounts(); buildTrending(); updateStats(); renderFeed();
+    document.getElementById('pageMeta').textContent=`Son güncelleme: ${new Date().toLocaleTimeString('tr-TR')} · ${articles.length} içerik`;
+  } else {
+    document.getElementById('feed').innerHTML=`<div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <h3>Erişim Engellendi</h3>
+      <p>Lütfen tarayıcınızın reklam engelleyicisini (AdBlock, Brave Shields vs.) bu sayfa için tamamen kapatıp sayfayı yenileyin.</p>
+    </div>`;
+    document.getElementById('connStatus').innerHTML = `<span class="live-dot" style="background:var(--red); box-shadow:none"></span>Bağlantı Kesildi`;
   }
 
-  articles = allNews.sort((a,b) => b.date - a.date);
-  
-  buildSrcList(); updateCounts(); buildTrending(); updateStats(); renderFeed();
-  document.getElementById('pageMeta').textContent=`Son güncelleme: ${new Date().toLocaleTimeString('tr-TR')} · Toplam ${articles.length} içerik`;
   btn.classList.remove('spin');
 }
 
@@ -388,7 +453,7 @@ function updateCounts(){ CATS.forEach(c=>{ const el=document.getElementById('cnt
 function buildTrending(){
   const words={}; const stop=new Set(['bir','bu','da','de','ile','için','ve','ama','ya','ki','ne','en','daha','olan','gibi','kadar','sonra','önce','yeni','son','büyük','çok','oldu','var','mı','mi','mu','mü','göre']);
   articles.forEach(a=>{ a.title.toLowerCase().split(/\s+/).forEach(w=>{ w=w.replace(/[^a-züğışçö]/gi,''); if(w.length>4 && !stop.has(w)) words[w]=(words[w]||0)+1; }); });
-  const top=Object.entries(words).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([w])=>w);
+  const top=Object.entries(words).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([w])=>w);
   document.getElementById('trendChips').innerHTML=top.map(w=>`<span class="trend-chip" onclick="quickSearch('${w}')">#${w}</span>`).join('');
 }
 function quickSearch(q){document.getElementById('searchIn').value=q;onSearch(q);}
@@ -401,6 +466,7 @@ function filtered(){
   if(activeSort==='oldest') arr=[...arr].reverse();
   return arr;
 }
+
 function renderFeed(){
   const arr=filtered(); const feed=document.getElementById('feed'); const fw=document.getElementById('featuredWrap');
   feed.className='feed'+(viewMode==='grid'?' grid':'');
@@ -460,7 +526,7 @@ function showSkeletons(){
 let toastTm;
 function toast(msg,type='ok'){
   const el=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; el.className='toast show '+type;
-  clearTimeout(toastTm); toastTm=setTimeout(()=>el.classList.remove('show'),3500);
+  clearTimeout(toastTm); toastTm=setTimeout(()=>el.classList.remove('show'),4000);
 }
 function timeAgo(ms){
   if(!ms)return''; const m=Math.floor((Date.now()-ms)/60000);
