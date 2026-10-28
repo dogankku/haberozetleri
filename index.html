@@ -11,28 +11,10 @@
    MODERN DESIGN TOKENS
    ============================================================ */
 :root, [data-theme="light"] {
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --surface2: #f1f5f9;
-  --offset: #e2e8f0;
-  --offset2: #cbd5e1;
-  --dynamic: #94a3b8;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --muted: #64748b;
-  --faint: #94a3b8;
-  --inv: #ffffff;
-  --primary: #6366f1;
-  --primaryh: #4f46e5;
-  --phigh: #e0e7ff;
-  --accent: #f43f5e;
-  --gold: #f59e0b;
-  --green: #10b981;
-  --blue: #3b82f6;
-  --red: #ef4444;
-  --purple: #8b5cf6;
-  --orange: #f97316;
-  --teal: #14b8a6;
+  --bg: #f8fafc; --surface: #ffffff; --surface2: #f1f5f9; --offset: #e2e8f0; --offset2: #cbd5e1;
+  --dynamic: #94a3b8; --border: #e2e8f0; --text: #0f172a; --muted: #64748b; --faint: #94a3b8;
+  --primary: #6366f1; --primaryh: #4f46e5; --phigh: #e0e7ff; --accent: #f43f5e; --gold: #f59e0b;
+  --green: #10b981; --blue: #3b82f6; --red: #ef4444; --purple: #8b5cf6; --teal: #14b8a6;
   --sh-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
   --sh-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
   --sh-lg: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
@@ -40,235 +22,104 @@
   --ease: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 [data-theme="dark"] {
-  --bg: #09090b;
-  --surface: #121214;
-  --surface2: #18181b;
-  --offset: #27272a;
-  --offset2: #3f3f46;
-  --dynamic: #52525b;
-  --border: #27272a;
-  --text: #f8fafc;
-  --muted: #a1a1aa;
-  --faint: #71717a;
-  --inv: #09090b;
-  --primary: #818cf8;
-  --primaryh: #6366f1;
-  --phigh: rgba(99, 102, 241, 0.15);
-  --accent: #fb7185;
-  --gold: #fbbf24;
-  --green: #34d399;
-  --blue: #60a5fa;
-  --red: #f87171;
-  --purple: #a78bfa;
-  --orange: #fb923c;
-  --teal: #2dd4bf;
-  --sh-sm: 0 1px 3px rgba(0,0,0,0.3);
-  --sh-md: 0 4px 20px rgba(0,0,0,0.4);
-  --sh-lg: 0 20px 40px rgba(0,0,0,0.5);
+  --bg: #09090b; --surface: #121214; --surface2: #18181b; --offset: #27272a; --offset2: #3f3f46;
+  --dynamic: #52525b; --border: #27272a; --text: #f8fafc; --muted: #a1a1aa; --faint: #71717a;
+  --primary: #818cf8; --primaryh: #6366f1; --phigh: rgba(99, 102, 241, 0.15); --accent: #fb7185;
+  --gold: #fbbf24; --green: #34d399; --blue: #60a5fa; --red: #f87171; --purple: #a78bfa; --teal: #2dd4bf;
+  --sh-sm: 0 1px 3px rgba(0,0,0,0.3); --sh-md: 0 4px 20px rgba(0,0,0,0.4); --sh-lg: 0 20px 40px rgba(0,0,0,0.5);
 }
 
-/* ============================================================
-   BASE
-   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 body { min-height: 100dvh; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6; color: var(--text); background: var(--bg); display: flex; flex-direction: column; transition: background var(--ease), color var(--ease); }
 img { display: block; max-width: 100%; object-fit: cover; }
-button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
-a { color: inherit; text-decoration: none; }
-a, button { transition: all var(--ease); }
-:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: var(--r-sm); }
+button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; transition: all var(--ease); }
+a { color: inherit; text-decoration: none; transition: all var(--ease); }
 
-/* ============================================================
-   HEADER (GLASSMORPHISM)
-   ============================================================ */
-.header {
-  position: sticky; top: 0; z-index: 200;
-  background: color-mix(in srgb, var(--surface) 80%, transparent);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-}
-.header-inner {
-  max-width: 1400px; margin-inline: auto; padding: 0 28px;
-  height: 64px; display: flex; align-items: center; gap: 16px;
-}
-.logo {
-  display: flex; align-items: center; gap: 12px;
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  white-space: nowrap;
-}
-.logo-mark {
-  width: 36px; height: 36px;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
-  border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  color: white; flex-shrink: 0; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
+/* HEADER */
+.header { position: sticky; top: 0; z-index: 200; background: color-mix(in srgb, var(--surface) 80%, transparent); border-bottom: 1px solid var(--border); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.header-inner { max-width: 1400px; margin-inline: auto; padding: 0 28px; height: 64px; display: flex; align-items: center; gap: 16px; }
+.logo { display: flex; align-items: center; gap: 12px; font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo-mark { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--purple)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
 .header-divider { width: 1px; height: 24px; background: var(--border); margin: 0 8px; }
-.live-pill {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px; font-weight: 600; color: var(--text);
-  padding: 4px 12px; background: color-mix(in srgb, var(--green) 15%, transparent);
-  border-radius: var(--r-full); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent);
-}
+.live-pill { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 4px 12px; background: color-mix(in srgb, var(--green) 15%, transparent); border-radius: var(--r-full); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
 .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; box-shadow: 0 0 8px var(--green); }
 @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
 .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-.icon-btn {
-  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-  border-radius: var(--r-md); color: var(--muted); background: var(--surface2); border: 1px solid var(--border);
-}
+.icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--r-md); color: var(--muted); background: var(--surface2); border: 1px solid var(--border); }
 .icon-btn:hover { background: var(--offset); color: var(--text); transform: translateY(-1px); }
-.refresh-btn {
-  display: flex; align-items: center; gap: 8px; padding: 0 20px; height: 40px;
-  background: var(--primary); color: white; border-radius: var(--r-md);
-  font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-}
-.refresh-btn:hover { background: var(--primaryh); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35); }
+.refresh-btn { display: flex; align-items: center; gap: 8px; padding: 0 20px; height: 40px; background: var(--primary); color: white; border-radius: var(--r-md); font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25); }
+.refresh-btn:hover { background: var(--primaryh); transform: translateY(-1px); }
 .refresh-btn.spin svg { animation: rotate 0.75s linear infinite; }
 @keyframes rotate { to { transform: rotate(360deg); } }
 
-/* ============================================================
-   LAYOUT & SIDEBAR
-   ============================================================ */
-.layout {
-  display: flex; flex: 1; max-width: 1400px; margin-inline: auto;
-  width: 100%; padding: 32px 28px; gap: 32px;
-}
+/* LAYOUT & SIDEBAR */
+.layout { display: flex; flex: 1; max-width: 1400px; margin-inline: auto; width: 100%; padding: 32px 28px; gap: 32px; }
 .sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 28px; }
-.sidebar-label {
-  font-size: 11px; font-weight: 700; color: var(--faint);
-  text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; padding: 0 12px;
-}
-.nav-btn {
-  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-  border-radius: var(--r-lg); font-size: 14px; font-weight: 500; color: var(--muted);
-  width: 100%; text-align: left; position: relative; margin-bottom: 2px;
-}
+.sidebar-label { font-size: 11px; font-weight: 700; color: var(--faint); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; padding: 0 12px; }
+.nav-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r-lg); font-size: 14px; font-weight: 500; color: var(--muted); width: 100%; text-align: left; }
 .nav-btn:hover { background: var(--offset); color: var(--text); }
 .nav-btn.active { background: var(--phigh); color: var(--primary); font-weight: 600; }
 .nav-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.nav-count {
-  margin-left: auto; font-size: 11px; font-weight: 600; background: var(--surface); color: var(--muted);
-  padding: 2px 8px; border-radius: var(--r-full); border: 1px solid var(--border); text-align: center;
-}
+.nav-count { margin-left: auto; font-size: 11px; font-weight: 600; background: var(--surface); color: var(--muted); padding: 2px 8px; border-radius: var(--r-full); border: 1px solid var(--border); }
 .nav-btn.active .nav-count { background: var(--primary); color: white; border-color: var(--primary); }
-
-.src-row {
-  display: flex; align-items: center; padding: 6px 12px; border-radius: var(--r-md); font-size: 13px; color: var(--muted);
-}
+.src-row { display: flex; align-items: center; padding: 6px 12px; border-radius: var(--r-md); font-size: 13px; color: var(--muted); }
 .src-row:hover { background: var(--offset); color: var(--text); }
 .src-row label { display: flex; align-items: center; gap: 10px; cursor: pointer; width: 100%; }
 .src-row input { accent-color: var(--primary); cursor: pointer; width: 16px; height: 16px; }
 
-/* ============================================================
-   MAIN & TOP ACTIONS
-   ============================================================ */
+/* MAIN & TOOLBAR */
 .main { flex: 1; min-width: 0; }
-.main-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+.main-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; }
 .page-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
 .page-meta { font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 500; }
-.view-toggle {
-  display: flex; background: var(--surface2); border-radius: var(--r-lg); padding: 4px; border: 1px solid var(--border);
-}
-.view-btn {
-  width: 36px; height: 32px; display: flex; align-items: center; justify-content: center;
-  border-radius: var(--r-sm); color: var(--muted);
-}
+.view-toggle { display: flex; background: var(--surface2); border-radius: var(--r-lg); padding: 4px; border: 1px solid var(--border); }
+.view-btn { width: 36px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: var(--r-sm); color: var(--muted); }
 .view-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--sh-sm); border: 1px solid var(--border); }
 
-/* ============================================================
-   TOOLBAR (SEARCH & FILTER)
-   ============================================================ */
 .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
 .search-wrap { position: relative; flex: 1; min-width: 250px; }
 .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
-.search-input {
-  width: 100%; padding: 12px 16px 12px 42px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-full); font-size: 14px; color: var(--text); box-shadow: var(--sh-sm);
-  transition: all var(--ease);
-}
-.search-input::placeholder { color: var(--faint); }
+.search-input { width: 100%; padding: 12px 16px 12px 42px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-full); font-size: 14px; color: var(--text); box-shadow: var(--sh-sm); transition: all var(--ease); }
 .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--phigh); }
 .pills { display: flex; gap: 8px; }
-.pill {
-  padding: 8px 18px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); border-radius: var(--r-full);
-  color: var(--muted); background: var(--surface); cursor: pointer; box-shadow: var(--sh-sm);
-}
+.pill { padding: 8px 18px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); border-radius: var(--r-full); color: var(--muted); background: var(--surface); cursor: pointer; box-shadow: var(--sh-sm); }
 .pill:hover { border-color: var(--primary); color: var(--primary); background: var(--phigh); }
-.pill.active { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+.pill.active { background: var(--primary); border-color: var(--primary); color: white; }
 
-/* ============================================================
-   TRENDING BAR
-   ============================================================ */
-.trending-bar {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-full);
-  padding: 8px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; overflow-x: auto;
-  box-shadow: var(--sh-sm); scrollbar-width: none;
-}
+.trending-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-full); padding: 8px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; overflow-x: auto; box-shadow: var(--sh-sm); scrollbar-width: none; }
 .trending-bar::-webkit-scrollbar { display: none; }
-.trending-label {
-  font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;
-  white-space: nowrap; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
-}
+.trending-label { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .trend-chips { display: flex; gap: 8px; flex-shrink: 0; }
-.trend-chip {
-  font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: var(--r-full);
-  background: var(--surface2); color: var(--text); white-space: nowrap; cursor: pointer;
-  border: 1px solid var(--border); transition: all var(--ease);
-}
-.trend-chip:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
+.trend-chip { font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: var(--r-full); background: var(--surface2); border: 1px solid var(--border); cursor: pointer; }
+.trend-chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-/* ============================================================
-   FEATURED CARD (Top Story)
-   ============================================================ */
-.featured-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2xl);
-  overflow: hidden; display: grid; grid-template-columns: 1.2fr 1fr; min-height: 280px;
-  margin-bottom: 24px; box-shadow: var(--sh-md); animation: fadeUp 0.4s ease both;
-  cursor: pointer; transition: all var(--ease);
-}
+/* CARDS & FEED */
+.featured-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2xl); overflow: hidden; display: grid; grid-template-columns: 1.2fr 1fr; min-height: 280px; margin-bottom: 24px; box-shadow: var(--sh-md); animation: fadeUp 0.4s ease both; cursor: pointer; transition: all var(--ease); }
 .featured-card:hover { box-shadow: var(--sh-lg); border-color: var(--primary); transform: translateY(-2px); }
 .featured-card.read .fc-title { opacity: 0.6; }
 .featured-body { padding: 32px; display: flex; flex-direction: column; justify-content: space-between; }
 .fc-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-.fc-title {
-  font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.3;
-  color: var(--text); margin-bottom: 12px; display: -webkit-box;
-  -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; letter-spacing: -0.01em;
-}
+.fc-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .fc-summary { font-size: 15px; color: var(--muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
 .fc-footer { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
 .fc-img-wrap { overflow: hidden; position: relative; }
 .fc-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
 .featured-card:hover .fc-img { transform: scale(1.05); }
 
-/* ============================================================
-   FEED & CARDS
-   ============================================================ */
 .feed { display: flex; flex-direction: column; gap: 16px; }
 .feed.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; align-items: start; }
-
-.card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl);
-  overflow: hidden; transition: all var(--ease); animation: fadeUp 0.35s ease both;
-  display: flex; flex-direction: column;
-}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); overflow: hidden; transition: all var(--ease); animation: fadeUp 0.35s ease both; display: flex; flex-direction: column; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 .card:hover { box-shadow: var(--sh-md); border-color: color-mix(in srgb, var(--primary) 50%, var(--border)); transform: translateY(-2px); }
 .card.read .card-title { opacity: 0.5; }
 .card.read .card-img { opacity: 0.6; filter: grayscale(0.5); }
 
-/* List mode */
 .feed:not(.grid) .card { flex-direction: row; align-items: stretch; gap: 0; }
 .feed:not(.grid) .card-img-wrap { width: 160px; height: auto; flex-shrink: 0; border-right: 1px solid var(--border); }
 .feed:not(.grid) .card-content { display: flex; flex-direction: column; flex: 1; padding: 16px 20px; }
 .feed:not(.grid) .card-footer { margin-top: auto; padding-top: 12px; }
 
-/* Grid mode */
 .feed.grid .card-img-wrap { width: 100%; height: 180px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
 .feed.grid .card-content { padding: 16px 20px; display: flex; flex-direction: column; flex: 1; }
 .feed.grid .card-footer { margin-top: auto; padding-top: 16px; }
@@ -276,11 +127,11 @@ a, button { transition: all var(--ease); }
 .card-img-wrap { overflow: hidden; position: relative; }
 .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
 .card:hover .card-img { transform: scale(1.08); }
-.card-img-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, var(--surface2) 0%, var(--offset) 100%); display: flex; align-items: center; justify-content: center; color: var(--faint); }
+.card-img-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, var(--surface2) 0%, var(--offset) 100%); display: flex; align-items: center; justify-content: center; color: var(--faint); font-weight: 600; font-size:12px; }
 .card-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
-.cat-badge { padding: 4px 10px; border-radius: var(--r-full); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: white; }
-.new-badge { padding: 4px 10px; border-radius: var(--r-full); font-size: 10px; font-weight: 800; background: var(--accent); color: white; letter-spacing: 0.05em; animation: pulse 2s infinite; }
-.card-title { font-size: 16px; font-weight: 700; line-height: 1.4; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+.cat-badge { padding: 4px 10px; border-radius: var(--r-full); font-size: 10px; font-weight: 700; text-transform: uppercase; color: white; }
+.new-badge { padding: 4px 10px; border-radius: var(--r-full); font-size: 10px; font-weight: 800; background: var(--accent); color: white; animation: pulse 2s infinite; }
+.card-title { font-size: 16px; font-weight: 700; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
 .card-summary { font-size: 13px; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .card-footer { display: flex; align-items: center; justify-content: space-between; }
 .card-source { font-size: 12px; font-weight: 600; color: var(--faint); display: flex; align-items: center; gap: 6px; }
@@ -290,9 +141,6 @@ a, button { transition: all var(--ease); }
 .act-btn.bookmarked { color: var(--gold); background: color-mix(in srgb, var(--gold) 15%, transparent); }
 .act-btn.bookmarked:hover { background: var(--gold); color: white; }
 
-/* ============================================================
-   EMPTY / ERROR / SKELETON
-   ============================================================ */
 .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 20px; color: var(--muted); gap: 16px; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--r-2xl); }
 .empty svg { color: var(--faint); opacity: 0.5; width: 64px; height: 64px; }
 .empty h3 { font-size: 20px; color: var(--text); font-family: 'Playfair Display', serif; }
@@ -300,27 +148,17 @@ a, button { transition: all var(--ease); }
 .sk { background: linear-gradient(90deg, var(--surface2) 25%, var(--offset) 50%, var(--surface2) 75%); background-size: 200%; animation: shim 1.5s infinite; border-radius: var(--r-sm); }
 @keyframes shim { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-/* ============================================================
-   STATS ROW
-   ============================================================ */
 .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 16px; display: flex; align-items: center; gap: 16px; box-shadow: var(--sh-sm); transition: transform var(--ease); }
-.stat-card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 16px; display: flex; align-items: center; gap: 16px; box-shadow: var(--sh-sm); }
 .stat-icon { width: 44px; height: 44px; border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; color: white; }
-.stat-val { font-size: 22px; font-weight: 800; font-family: 'Playfair Display', serif; line-height: 1; color: var(--text); }
+.stat-val { font-size: 22px; font-weight: 800; font-family: 'Playfair Display', serif; line-height: 1; }
 .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600; }
 
-/* ============================================================
-   TOAST
-   ============================================================ */
 .toast { position: fixed; bottom: 32px; right: 32px; background: var(--text); color: var(--bg); border-radius: var(--r-lg); padding: 14px 24px; font-size: 14px; font-weight: 600; box-shadow: var(--sh-lg); display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.16,1,0.3,1); pointer-events: none; z-index: 999; }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.ok svg { color: var(--green); }
-.toast.err svg { color: var(--red); }
+.toast.err svg { color: var(--gold); } /* Uyarı rengi */
 
-/* ============================================================
-   MOBILE RESPONSIVE
-   ============================================================ */
 @media(max-width: 900px) {
   .layout { flex-direction: column; padding: 16px; gap: 20px; }
   .sidebar { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -341,7 +179,6 @@ a, button { transition: all var(--ease); }
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="header-inner">
     <div class="logo">
@@ -351,13 +188,13 @@ a, button { transition: all var(--ease); }
       HaberAkışı
     </div>
     <div class="header-divider"></div>
-    <div class="live-pill"><span class="live-dot"></span>Canlı Takip</div>
+    <div class="live-pill" id="connStatus"><span class="live-dot"></span>Canlı Bağlantı</div>
     <div class="header-right">
       <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
         Yenile
       </button>
-      <button class="icon-btn" id="themeBtn" title="Tema Değiştir" aria-label="Tema">
+      <button class="icon-btn" id="themeBtn" title="Tema Değiştir">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
     </div>
@@ -365,8 +202,6 @@ a, button { transition: all var(--ease); }
 </header>
 
 <div class="layout">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div>
       <div class="sidebar-label">Kategoriler</div>
@@ -386,9 +221,7 @@ a, button { transition: all var(--ease); }
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
-    <!-- Stats -->
     <div class="stats-row" id="statsRow">
       <div class="stat-card"><div class="stat-icon" style="background:var(--primary)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg></div><div><div class="stat-val" id="s-total">–</div><div class="stat-lbl">Toplam Haber</div></div></div>
       <div class="stat-card"><div class="stat-icon" style="background:var(--accent)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div><div class="stat-val" id="s-new">–</div><div class="stat-lbl">Yeni (Son 6 Saat)</div></div></div>
@@ -396,11 +229,10 @@ a, button { transition: all var(--ease); }
       <div class="stat-card"><div class="stat-icon" style="background:var(--gold)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></div><div><div class="stat-val" id="s-saved">0</div><div class="stat-lbl">Kaydedilen</div></div></div>
     </div>
 
-    <!-- Top -->
     <div class="main-top">
       <div>
         <div class="page-title" id="pageTitle">Tüm Haberler</div>
-        <div class="page-meta" id="pageMeta">Canlı veriler çekiliyor...</div>
+        <div class="page-meta" id="pageMeta">Veriler yükleniyor...</div>
       </div>
       <div class="view-toggle">
         <button class="view-btn active" onclick="setView('list',this)" title="Liste">
@@ -412,16 +244,11 @@ a, button { transition: all var(--ease); }
       </div>
     </div>
 
-    <!-- Trending -->
     <div class="trending-bar">
-      <div class="trending-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 21 6-6 4 4 8-8"/><path d="M15 11h6v6"/></svg>
-        Gündem Trendleri
-      </div>
+      <div class="trending-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 21 6-6 4 4 8-8"/><path d="M15 11h6v6"/></svg>Trendler</div>
       <div class="trend-chips" id="trendChips"></div>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
       <div class="search-wrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -433,22 +260,18 @@ a, button { transition: all var(--ease); }
       </div>
     </div>
 
-    <!-- Featured -->
     <div id="featuredWrap"></div>
-
-    <!-- Feed -->
     <div class="feed grid" id="feed"></div>
   </main>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
   <span id="toastMsg"></span>
 </div>
 
 <script>
-/* ===== THEME ===== */
+/* THEME */
 (()=>{
   const btn=document.getElementById('themeBtn'), r=document.documentElement;
   let t=localStorage.getItem('ha_theme')||'dark';
@@ -460,16 +283,15 @@ a, button { transition: all var(--ease); }
   btn.onclick=()=>{t=t==='dark'?'light':'dark';r.setAttribute('data-theme',t);localStorage.setItem('ha_theme',t);update();};
 })();
 
-/* ===== CONFIG ===== */
+/* CONFIG & MOCK DATA (ÇÖKMEYİ ENGELLEYEN YEDEK VERİLER) */
 const CATS=[
-  {id:'all',       label:'Tümü',      color:'#64748b'},
-  {id:'gundem',    label:'Gündem',    color:'#ef4444'},
-  {id:'ekonomi',   label:'Ekonomi',   color:'#f59e0b'},
-  {id:'spor',      label:'Spor',      color:'#10b981'},
+  {id:'all', label:'Tümü', color:'#64748b'},
+  {id:'gundem', label:'Gündem', color:'#ef4444'},
+  {id:'ekonomi', label:'Ekonomi', color:'#f59e0b'},
+  {id:'spor', label:'Spor', color:'#10b981'},
   {id:'teknoloji', label:'Teknoloji', color:'#3b82f6'},
 ];
 
-// GERÇEK RSS KAYNAKLARI
 const RSS_SOURCES = [
   { url: 'https://www.trthaber.com/sondakika.rss', source: 'TRT Haber', cat: 'gundem' },
   { url: 'https://www.donanimhaber.com/rss/tum', source: 'DonanımHaber', cat: 'teknoloji' },
@@ -477,339 +299,173 @@ const RSS_SOURCES = [
   { url: 'https://www.ntvspor.net/rss', source: 'NTV Spor', cat: 'spor' }
 ];
 
-// ÇOKLU (YEDEKLİ) PROXY LİSTESİ - Biri çökerse diğeri devreye girer
-const PROXIES = [
-  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+const MOCK_NEWS = [
+  { id: 'm1', title: 'Merkez Bankası Para Politikası Kurulu faiz kararını açıkladı', summary: 'Merkez Bankası PPK toplantısı sonrası yapılan açıklamaya göre politika faizi piyasa beklentileri doğrultusunda sabit tutuldu.', link: '#', img: 'https://icdn.ensonhaber.com/resimler/diger/kok/2023/06/22/tcmb_9826.jpg', cat: 'ekonomi', source: 'Habertürk Ek.', date: Date.now() - 3600000 },
+  { id: 'm2', title: 'Yapay Zeka yarışında yeni perde: Teknoloji devleri yeni dil modellerini duyurdu', summary: 'Silikon Vadisi şirketleri peş peşe yeni yapay zeka modellerini tanıtırken, uzmanlar güvenlik ve veri gizliliği konusundaki endişeleri dile getirmeye devam ediyor.', link: '#', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000', cat: 'teknoloji', source: 'DonanımHaber', date: Date.now() - 7200000 },
+  { id: 'm3', title: 'Süper Lig\'de nefes kesen derbi hazırlıkları tamamlandı', summary: 'Hafta sonu oynanacak dev derbi öncesi takımlar son antrenmanlarını basına kapalı olarak gerçekleştirdi. Biletler dakikalar içinde tükendi.', link: '#', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&q=80&w=1000', cat: 'spor', source: 'NTV Spor', date: Date.now() - 14400000 },
+  { id: 'm4', title: 'Bakanlık yeni destek paketini duyurdu: Kimler faydalanabilecek?', summary: 'İlgili bakanlık tarafından yapılan açıklamada, küçük esnaf ve KOBİ\'ler için hazırlanan yeni kredi destek paketinin detayları paylaşıldı. Başvurular yarın başlıyor.', link: '#', img: '', cat: 'gundem', source: 'TRT Haber', date: Date.now() - 18000000 },
 ];
 
 let articles=[], saved=new Set(JSON.parse(localStorage.getItem('ha_saved')||'[]')), read=new Set();
 let activeCat='all', activeSort='newest', searchQ='', viewMode='list';
 let enabledSrc=new Set();
-let autoTimer = setInterval(loadData, 300000); // 5 Dk'da bir otomatik güncelle
 
-/* ===== BOOT ===== */
-function boot(){
-  renderCatNav();
-  document.getElementById('savedCnt').textContent = saved.size;
-  loadData();
-}
+function boot(){ renderCatNav(); document.getElementById('savedCnt').textContent = saved.size; loadData(); }
 
-/* ===== CAT NAV ===== */
 function renderCatNav(){
-  document.getElementById('catNav').innerHTML=CATS.map(c=>`
-    <button class="nav-btn${c.id==='all'?' active':''}" data-cat="${c.id}" onclick="setCat('${c.id}',this)">
-      <span class="nav-dot" style="background:${c.color}"></span>${c.label}
-      <span class="nav-count" id="cnt_${c.id}">–</span>
-    </button>`).join('');
+  document.getElementById('catNav').innerHTML=CATS.map(c=>`<button class="nav-btn${c.id==='all'?' active':''}" data-cat="${c.id}" onclick="setCat('${c.id}',this)"><span class="nav-dot" style="background:${c.color}"></span>${c.label}<span class="nav-count" id="cnt_${c.id}">–</span></button>`).join('');
 }
-function setCat(id,el){
-  activeCat=id;
-  document.querySelectorAll('.nav-btn[data-cat]').forEach(b=>b.classList.remove('active'));
-  document.getElementById('savedBtn').classList.remove('active');
-  el.classList.add('active');
-  document.getElementById('pageTitle').textContent=CATS.find(x=>x.id===id).label+' Haberleri';
-  renderFeed();
-}
-
-/* ===== SRC LIST ===== */
+function setCat(id,el){ activeCat=id; document.querySelectorAll('.nav-btn[data-cat]').forEach(b=>b.classList.remove('active')); document.getElementById('savedBtn').classList.remove('active'); el.classList.add('active'); document.getElementById('pageTitle').textContent=CATS.find(x=>x.id===id).label+' Haberleri'; renderFeed(); }
 function buildSrcList(){
   if(enabledSrc.size === 0) enabledSrc = new Set(articles.map(a=>a.source));
   const sources=[...new Set(articles.map(a=>a.source))].sort();
-  document.getElementById('srcList').innerHTML=sources.map(s=>`
-    <div class="src-row">
-      <label><input type="checkbox" ${enabledSrc.has(s)?'checked':''} onchange="toggleSrc('${s}',this.checked)">${s}</label>
-    </div>`).join('');
+  document.getElementById('srcList').innerHTML=sources.map(s=>`<div class="src-row"><label><input type="checkbox" ${enabledSrc.has(s)?'checked':''} onchange="toggleSrc('${s}',this.checked)">${s}</label></div>`).join('');
 }
 function toggleSrc(id,on){on?enabledSrc.add(id):enabledSrc.delete(id);renderFeed();}
 
-/* ===== YEDEKLİ RSS ÇEKİCİ (Multi-Proxy Fetch) ===== */
-async function fetchRSS(url) {
-  for (const getProxyUrl of PROXIES) {
-    try {
-      const response = await fetch(getProxyUrl(url), { cache: 'no-store' });
-      if (response.ok) {
-        return await response.text();
-      }
-    } catch (e) {
-      console.warn("Proxy başarısız, diğerine geçiliyor...");
-    }
-  }
-  throw new Error("Tüm proxy servisleri başarısız oldu.");
-}
-
-/* ===== LOAD ===== */
+/* UNBREAKABLE DATA LOADER */
 async function loadData(){
   const btn=document.getElementById('refreshBtn');
   btn.classList.add('spin');
   showSkeletons();
   
   let allNews = [];
-
+  
+  // Birinci Yöntem: RSS2JSON API (En Güveniliri)
   const promises = RSS_SOURCES.map(async (source) => {
     try {
-      const xmlText = await fetchRSS(source.url);
-      
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-      const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 30); // Her siteden son 30 haber
-      
-      items.forEach(item => {
-        const title = item.querySelector("title")?.textContent || "";
-        const link = item.querySelector("link")?.textContent || "";
-        let desc = item.querySelector("description")?.textContent || "";
-        
-        let img = "";
-        const enclosure = item.querySelector("enclosure");
-        const mediaContent = item.getElementsByTagNameNS("*", "content")[0]; 
-        
-        if (enclosure) img = enclosure.getAttribute("url");
-        else if (mediaContent) img = mediaContent.getAttribute("url");
-        if (!img) img = extractImgFromDesc(desc) || "";
-
-        const pubDate = item.querySelector("pubDate")?.textContent || new Date().toISOString();
-        let cleanSummary = desc.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/<[^>]*>?/gm, '').trim().substring(0, 150) + '...';
-
-        allNews.push({
-          id: item.querySelector("guid")?.textContent || link,
-          title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1'),
-          summary: cleanSummary,
-          link: link,
-          img: img,
-          cat: source.cat,
-          source: source.source,
-          date: new Date(pubDate.replace(/-/g, '/')).getTime()
+      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`, { cache: 'no-store' });
+      const data = await res.json();
+      if(data.status === 'ok') {
+        data.items.slice(0, 15).forEach(item => {
+          allNews.push({
+            id: item.guid || item.link,
+            title: item.title,
+            summary: item.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...',
+            link: item.link,
+            img: item.thumbnail || item.enclosure?.link || extractImgFromDesc(item.description) || "",
+            cat: source.cat,
+            source: source.source,
+            date: new Date(item.pubDate.replace(/-/g, '/')).getTime()
+          });
         });
-      });
+      }
     } catch(err) {
-      console.warn(`${source.source} yüklenirken hata oluştu.`);
+      console.warn(source.source + " API'den çekilemedi.");
     }
   });
 
   await Promise.allSettled(promises);
 
-  try {
-    if (allNews.length === 0) throw new Error("Hiçbir haber kaynağından veri gelmedi.");
-
-    // Tarihe göre sırala
-    articles = allNews.sort((a,b) => b.date - a.date);
-    
-    buildSrcList();
-    updateCounts();
-    buildTrending();
-    updateStats();
-    renderFeed();
-    
-    const now = new Date();
-    document.getElementById('pageMeta').textContent=`Son güncelleme: ${now.toLocaleTimeString('tr-TR')} · Toplam ${articles.length} içerik`;
-    toast(`${articles.length} haber başarıyla yüklendi`,'ok');
-    
-  } catch(err) {
-    document.getElementById('feed').innerHTML=`<div class="empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-      <h3>Veriler Alınamadı</h3>
-      <p>Lütfen tarayıcınızın reklam engelleyicisini (AdBlock, Brave Shields) bu site için kapatıp tekrar deneyin.</p>
-    </div>`;
-    toast('Haberler alınamadı','err');
+  // EĞER AĞ / TARAYICI HER ŞEYİ ENGELLİYORSA MOCK VERİYE GEÇ (ÇÖKMEYİ ENGELLE)
+  if (allNews.length === 0) {
+    allNews = [...MOCK_NEWS];
+    document.getElementById('connStatus').innerHTML = `<span class="live-dot" style="background:var(--gold); box-shadow:0 0 8px var(--gold)"></span>Çevrimdışı Mod`;
+    document.getElementById('connStatus').style.background = "color-mix(in srgb, var(--gold) 15%, transparent)";
+    document.getElementById('connStatus').style.borderColor = "color-mix(in srgb, var(--gold) 30%, transparent)";
+    toast('Bağlantı engellendi. Örnek veriler gösteriliyor.', 'err');
+  } else {
+    document.getElementById('connStatus').innerHTML = `<span class="live-dot"></span>Canlı Takip`;
+    document.getElementById('connStatus').style.background = "color-mix(in srgb, var(--green) 15%, transparent)";
+    toast(`${allNews.length} haber başarıyla yüklendi`, 'ok');
   }
+
+  articles = allNews.sort((a,b) => b.date - a.date);
   
+  buildSrcList(); updateCounts(); buildTrending(); updateStats(); renderFeed();
+  document.getElementById('pageMeta').textContent=`Son güncelleme: ${new Date().toLocaleTimeString('tr-TR')} · Toplam ${articles.length} içerik`;
   btn.classList.remove('spin');
 }
 
-function extractImgFromDesc(html) {
-  if(!html) return null;
-  const match = html.match(/<img[^>]+src="([^">]+)"/);
-  return match ? match[1] : null;
-}
+function extractImgFromDesc(html) { if(!html) return null; const match = html.match(/<img[^>]+src="([^">]+)"/); return match ? match[1] : null; }
 
-/* ===== STATS & COUNTS ===== */
 function updateStats(){
   document.getElementById('s-total').textContent=articles.length;
   document.getElementById('s-new').textContent=articles.filter(a=>a.date&&(Date.now()-a.date)<21600000).length;
   document.getElementById('s-src').textContent=new Set(articles.map(a=>a.source)).size;
 }
-
-function updateCounts(){
-  CATS.forEach(c=>{
-    const el=document.getElementById('cnt_'+c.id);
-    if(!el)return;
-    el.textContent=c.id==='all'?articles.length:articles.filter(a=>a.cat===c.id).length;
-  });
-}
-
-/* ===== TRENDING ===== */
+function updateCounts(){ CATS.forEach(c=>{ const el=document.getElementById('cnt_'+c.id); if(el) el.textContent=c.id==='all'?articles.length:articles.filter(a=>a.cat===c.id).length; }); }
 function buildTrending(){
-  const words={};
-  const stop=new Set(['bir','bu','da','de','ile','için','ve','ama','ya','ki','ne','en','daha','olan','gibi','kadar','sonra','önce','yeni','son','büyük','çok','oldu','var','mı','mi','mu','mü','göre']);
-  articles.forEach(a=>{
-    a.title.toLowerCase().split(/\s+/).forEach(w=>{
-      w=w.replace(/[^a-züğışçö]/gi,'');
-      if(w.length>4 && !stop.has(w)) words[w]=(words[w]||0)+1;
-    });
-  });
-  const top=Object.entries(words).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([w])=>w);
+  const words={}; const stop=new Set(['bir','bu','da','de','ile','için','ve','ama','ya','ki','ne','en','daha','olan','gibi','kadar','sonra','önce','yeni','son','büyük','çok','oldu','var','mı','mi','mu','mü','göre']);
+  articles.forEach(a=>{ a.title.toLowerCase().split(/\s+/).forEach(w=>{ w=w.replace(/[^a-züğışçö]/gi,''); if(w.length>4 && !stop.has(w)) words[w]=(words[w]||0)+1; }); });
+  const top=Object.entries(words).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([w])=>w);
   document.getElementById('trendChips').innerHTML=top.map(w=>`<span class="trend-chip" onclick="quickSearch('${w}')">#${w}</span>`).join('');
 }
 function quickSearch(q){document.getElementById('searchIn').value=q;onSearch(q);}
 
-/* ===== RENDER & FILTER ===== */
 function filtered(){
   let arr=articles.filter(a=>enabledSrc.has(a.source));
   if(activeCat!=='all' && activeCat!=='saved') arr=arr.filter(a=>a.cat===activeCat);
   if(activeCat==='saved') arr=articles.filter(a=>saved.has(a.id));
-  if(searchQ){
-    const q=searchQ.toLowerCase();
-    arr=arr.filter(a=>a.title.toLowerCase().includes(q)||a.summary.toLowerCase().includes(q)||a.source.toLowerCase().includes(q));
-  }
+  if(searchQ){ const q=searchQ.toLowerCase(); arr=arr.filter(a=>a.title.toLowerCase().includes(q)||a.summary.toLowerCase().includes(q)||a.source.toLowerCase().includes(q)); }
   if(activeSort==='oldest') arr=[...arr].reverse();
   return arr;
 }
-
 function renderFeed(){
-  const arr=filtered();
-  const feed=document.getElementById('feed');
-  const fw=document.getElementById('featuredWrap');
+  const arr=filtered(); const feed=document.getElementById('feed'); const fw=document.getElementById('featuredWrap');
   feed.className='feed'+(viewMode==='grid'?' grid':'');
-
   if(!arr.length){
-    fw.innerHTML='';
-    feed.innerHTML=`<div class="empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <h3>Bulunamadı</h3>
-      <p>Kriterlerinize uygun bir haber yok.</p>
-    </div>`;
+    fw.innerHTML=''; feed.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><h3>Bulunamadı</h3><p>Kriterlerinize uygun bir haber yok.</p></div>`;
     return;
   }
-
   let feedArr=arr;
-  if(viewMode==='list' && !searchQ && activeCat!=='saved' && arr.length>0){
-    fw.innerHTML=featuredHtml(arr[0]);
-    feedArr=arr.slice(1);
-  }else{
-    fw.innerHTML='';
-  }
-
+  if(viewMode==='list' && !searchQ && activeCat!=='saved' && arr.length>0){ fw.innerHTML=featuredHtml(arr[0]); feedArr=arr.slice(1); } else { fw.innerHTML=''; }
   feed.innerHTML=feedArr.map((a,i)=>cardHtml(a,i)).join('');
 }
 
-/* ===== COMPONENTS ===== */
 function featuredHtml(a){
-  const cat=CATS.find(c=>c.id===a.cat)||CATS[1];
-  const bk=saved.has(a.id);
-  const rd=read.has(a.id);
-  const imgHtml=a.img
-    ?`<img class="fc-img" src="${esc(a.img)}" loading="lazy" onerror="this.style.display='none'">`
-    :`<div class="fc-img-placeholder">Görsel Yok</div>`;
-    
+  const cat=CATS.find(c=>c.id===a.cat)||CATS[1]; const bk=saved.has(a.id); const rd=read.has(a.id);
+  const imgHtml=a.img ?`<img class="fc-img" src="${esc(a.img)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="card-img-placeholder">Görsel Yok</div>`;
   return `<div class="featured-card${rd?' read':''}">
     <div class="featured-body">
-      <div>
-        <div class="fc-meta">
-          <span class="cat-badge" style="background:${cat.color}">${cat.label}</span>
-          <span style="font-size:12px;color:var(--muted);font-weight:600">${esc(a.source)} • ${timeAgo(a.date)}</span>
-        </div>
-        <h2 class="fc-title"><a href="${esc(a.link)}" target="_blank" rel="noopener" onclick="markRead('${a.id}')">${esc(a.title)}</a></h2>
-        <p class="fc-summary">${esc(a.summary)}</p>
-      </div>
-      <div class="fc-footer">
-        <button class="act-btn${bk?' bookmarked':''}" onclick="toggleSave('${a.id}')" title="Kaydet">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="${bk?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-        </button>
-        <a class="act-btn" href="${esc(a.link)}" target="_blank" rel="noopener" onclick="markRead('${a.id}')" title="Kaynağa Git">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </div>
-    <div class="fc-img-wrap">${imgHtml}</div>
+      <div><div class="fc-meta"><span class="cat-badge" style="background:${cat.color}">${cat.label}</span><span style="font-size:12px;color:var(--muted);font-weight:600">${esc(a.source)} • ${timeAgo(a.date)}</span></div>
+      <h2 class="fc-title"><a href="${esc(a.link)}" target="_blank" rel="noopener" onclick="markRead('${a.id}')">${esc(a.title)}</a></h2>
+      <p class="fc-summary">${esc(a.summary)}</p></div>
+      <div class="fc-footer"><button class="act-btn${bk?' bookmarked':''}" onclick="toggleSave('${a.id}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="${bk?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></button>
+      <a class="act-btn" href="${esc(a.link)}" target="_blank" rel="noopener" onclick="markRead('${a.id}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div><div class="fc-img-wrap">${imgHtml}</div>
   </div>`;
 }
 
 function cardHtml(a,i){
-  const cat=CATS.find(c=>c.id===a.cat)||CATS[1];
-  const isNew=a.date&&(Date.now()-a.date)<21600000;
-  const bk=saved.has(a.id);
-  const rd=read.has(a.id);
-  const delay=Math.min(i*0.02, 0.3);
-  const imgHtml=a.img
-    ?`<img class="card-img" src="${esc(a.img)}" loading="lazy" onerror="this.style.display='none'">`
-    :`<div class="card-img-placeholder">Görsel Yok</div>`;
-    
-  return `<article class="card${rd?' read':''}" style="animation-delay:${delay}s">
+  const cat=CATS.find(c=>c.id===a.cat)||CATS[1]; const isNew=a.date&&(Date.now()-a.date)<21600000; const bk=saved.has(a.id); const rd=read.has(a.id);
+  const imgHtml=a.img ?`<img class="card-img" src="${esc(a.img)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="card-img-placeholder">Görsel Yok</div>`;
+  return `<article class="card${rd?' read':''}" style="animation-delay:${Math.min(i*0.02, 0.3)}s">
     <div class="card-img-wrap">${imgHtml}</div>
     <div class="card-content">
-      <div class="card-meta">
-        <span class="cat-badge" style="background:${cat.color}">${cat.label}</span>
-        ${isNew?'<span class="new-badge">YENİ</span>':''}
-        <span>${timeAgo(a.date)}</span>
-      </div>
+      <div class="card-meta"><span class="cat-badge" style="background:${cat.color}">${cat.label}</span>${isNew?'<span class="new-badge">YENİ</span>':''}<span>${timeAgo(a.date)}</span></div>
       <h2 class="card-title"><a href="${esc(a.link)}" target="_blank" rel="noopener" onclick="markRead('${a.id}')">${esc(a.title)}</a></h2>
       ${a.summary?`<p class="card-summary">${esc(a.summary)}</p>`:''}
-      <div class="card-footer">
-        <span class="card-source">${esc(a.source)}</span>
-        <div class="card-actions">
-          <button class="act-btn${bk?' bookmarked':''}" onclick="toggleSave('${a.id}')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="${bk?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
+      <div class="card-footer"><span class="card-source">${esc(a.source)}</span>
+      <div class="card-actions"><button class="act-btn${bk?' bookmarked':''}" onclick="toggleSave('${a.id}')"><svg width="15" height="15" viewBox="0 0 24 24" fill="${bk?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></button></div>
+    </div></div>
   </article>`;
 }
 
-/* ===== INTERACTIONS ===== */
 function markRead(id){read.add(id); setTimeout(renderFeed,120);}
 function toggleSave(id){
-  if(saved.has(id)){ saved.delete(id); toast('Kayıt kaldırıldı','ok'); }
-  else{ saved.add(id); toast('Haber kaydedildi','ok'); }
-  
-  localStorage.setItem('ha_saved', JSON.stringify([...saved]));
-  document.getElementById('savedCnt').textContent=saved.size;
-  document.getElementById('s-saved').textContent=saved.size;
-  renderFeed();
+  if(saved.has(id)){ saved.delete(id); toast('Kayıt kaldırıldı','ok'); } else{ saved.add(id); toast('Haber kaydedildi','ok'); }
+  localStorage.setItem('ha_saved', JSON.stringify([...saved])); document.getElementById('savedCnt').textContent=saved.size; document.getElementById('s-saved').textContent=saved.size; renderFeed();
 }
-function showSaved(){
-  document.querySelectorAll('.nav-btn[data-cat]').forEach(b=>b.classList.remove('active'));
-  document.getElementById('savedBtn').classList.add('active');
-  document.getElementById('pageTitle').textContent='Kaydedilen Haberler';
-  activeCat='saved';
-  renderFeed();
-}
-
+function showSaved(){ document.querySelectorAll('.nav-btn[data-cat]').forEach(b=>b.classList.remove('active')); document.getElementById('savedBtn').classList.add('active'); document.getElementById('pageTitle').textContent='Kaydedilen Haberler'; activeCat='saved'; renderFeed(); }
 function setView(v,el){viewMode=v;document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderFeed();}
 function setSort(s,el){activeSort=s;document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderFeed();}
 function onSearch(v){searchQ=v;renderFeed();}
 
-/* ===== SKELETONS ===== */
 function showSkeletons(){
-  document.getElementById('featuredWrap').innerHTML='';
-  const feed=document.getElementById('feed');
-  feed.className='feed grid';
-  feed.innerHTML=Array(6).fill(0).map(()=>`
-    <div class="card" style="padding:16px; gap:12px; height:280px">
-      <div class="sk" style="width:100%;height:140px;border-radius:12px"></div>
-      <div class="sk" style="width:40%;height:16px"></div>
-      <div class="sk" style="width:90%;height:22px"></div>
-      <div class="sk" style="width:70%;height:22px"></div>
-    </div>`).join('');
+  document.getElementById('featuredWrap').innerHTML=''; const feed=document.getElementById('feed'); feed.className='feed grid';
+  feed.innerHTML=Array(6).fill(0).map(()=>`<div class="card" style="padding:16px; gap:12px; height:280px"><div class="sk" style="width:100%;height:140px;border-radius:12px"></div><div class="sk" style="width:40%;height:16px"></div><div class="sk" style="width:90%;height:22px"></div><div class="sk" style="width:70%;height:22px"></div></div>`).join('');
 }
 
-/* ===== UTILS ===== */
 let toastTm;
 function toast(msg,type='ok'){
-  const el=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  el.className='toast show '+type;
-  clearTimeout(toastTm);
-  toastTm=setTimeout(()=>el.classList.remove('show'),3000);
+  const el=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; el.className='toast show '+type;
+  clearTimeout(toastTm); toastTm=setTimeout(()=>el.classList.remove('show'),3500);
 }
-
 function timeAgo(ms){
-  if(!ms)return'';
-  const m=Math.floor((Date.now()-ms)/60000);
+  if(!ms)return''; const m=Math.floor((Date.now()-ms)/60000);
   if(m<1)return'Az önce'; if(m<60)return m+'dk önce';
-  const h=Math.floor(m/60); if(h<24)return h+'sa önce';
-  return Math.floor(h/24)+'g önce';
+  const h=Math.floor(m/60); if(h<24)return h+'sa önce'; return Math.floor(h/24)+'g önce';
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
